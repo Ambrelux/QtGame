@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/player_default.png</file>
+        <file>images/player_down_moving1.png</file>
+        <file>images/player_down_moving2.png</file>
+        <file>images/player_left.png</file>
+        <file>images/player_left_moving1.png</file>
+        <file>images/player_left_moving2.png</file>
+        <file>images/player_right.png</file>
+        <file>images/player_right_moving1.png</file>
+        <file>images/player_right_moving2.png</file>
+        <file>images/player_up.png</file>
+        <file>images/player_up_moving1.png</file>
+        <file>images/player_up_moving2.png</file>
+    </qresource>
+</RCC>
