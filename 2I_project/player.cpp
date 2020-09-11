@@ -1,5 +1,6 @@
 #include "player.h"
 
+
 Player::Player(Unit *parent)
 {
     setPixmap(QPixmap(":/images/images/player_default.png"));
@@ -23,7 +24,5 @@ void Player::keyPressEvent(QKeyEvent *event)
             setPos(x(),y()+32);
             setPixmap(QPixmap(":/images/images/player_default"));
         }
-
-
 
 }

@@ -12,5 +12,6 @@
         <file>images/player_up.png</file>
         <file>images/player_up_moving1.png</file>
         <file>images/player_up_moving2.png</file>
+        <file>images/map_test.png</file>
     </qresource>
 </RCC>

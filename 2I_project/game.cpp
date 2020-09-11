@@ -6,7 +6,7 @@ Game::Game(QWidget *parent)
 {
     scene = new QGraphicsScene();
     scene->setSceneRect(0,0,800,600);
-    //setBackgroundBrush(QBrush(QImage(":/images/images/bg.png")));
+    setBackgroundBrush(QBrush(QImage(":/images/images/map_test.png")));
     setScene(scene);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
