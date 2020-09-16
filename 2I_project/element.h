@@ -3,12 +3,28 @@
 
 #include <QObject>
 #include <QGraphicsPixmapItem>
-#include <QGraphicsItem>
-class Element: public QObject,public QGraphicsPixmapItem{
+#include <QPixmap>
+
+class Element: public QObject{
 
     Q_OBJECT
 public:
-    Element(QGraphicsItem * parent=0);
+    Element();
+    QPixmap getTile();
+    void setTile(QString _tile);
+
+
+    int getXCoord() const;
+    void setXCoord(int value);
+
+    int getYCoord() const;
+    void setYCoord(int value);
+
+private:
+    QPixmap tile;
+    int xCoord;
+    int yCoord;
+
 };
 
 #endif // ELEMENT_H

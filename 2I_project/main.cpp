@@ -1,15 +1,18 @@
 #include <QApplication>
-#include "game.h"
+#include "model.h"
+#include "view.h"
+#include "controller.h"
 
-
-Game * game;
+Controller *pointerCtrl;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    game = new Game();
-    game->show();
-
+    Model model;
+    View view;
+    Controller controller(&view,&model);
+    pointerCtrl = &controller;
+    controller.startGame();
     return a.exec();
 }

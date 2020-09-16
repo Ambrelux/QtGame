@@ -4,9 +4,10 @@
 
 class Unit : public Element{
 public:
-    Unit(Element * parent = 0);
+    Unit();
     int getHealthPoint() const;
     void setHealthPoint(int value);
+    void move(QString direction);
 
 private:
     int healthPoint;

@@ -16,17 +16,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    controller.cpp \
     element.cpp \
-    game.cpp \
     main.cpp \
+    model.cpp \
     player.cpp \
-    unit.cpp
+    unit.cpp \
+    view.cpp
 
 HEADERS += \
+    controller.h \
     element.h \
-    game.h \
+    model.h \
     player.h \
-    unit.h
+    unit.h \
+    view.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -35,3 +39,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
+
+DISTFILES += \
+    ../../map/maps/map_test.png

@@ -5,8 +5,8 @@
 
 class Player : public Unit{
 public:
-    Player(Unit * parent = 0);
-    void keyPressEvent(QKeyEvent * event);
+    Player();
+private:
 };
 
 #endif // PLAYER_H
