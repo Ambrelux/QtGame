@@ -1,5 +1,6 @@
 #include "view.h"
 #include <QPointer>
+#include <QtDebug>
 extern Controller *pointerCtrl;
 
 View::View(QWidget *parent)
@@ -29,12 +30,11 @@ void View::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void View::displayMap(Player *player)
+void View::displayMap(Player *player, Map *map)
 {
     this->scene->setSceneRect(player->getXCoord()-400,player->getYCoord()-300,800,600);
-    this->scene->setBackgroundBrush(QBrush(QImage(":/images/images/map.png")));
+    this->scene->setBackgroundBrush(QBrush(QImage(map->getMapImagePath())));
     this->setScene(scene);
-
 }
 
 void View::displayPlayer(Player *player)

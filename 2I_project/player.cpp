@@ -3,8 +3,11 @@
 
 Player::Player()
 {
-    this->setXCoord(2112);
-    this->setYCoord(1824);
+    this->setXCoord(66*32);
+    this->setYCoord(57*32);
+    this->setXTile(66);
+    this->setYTile(57);
     this->setTile("default");
+    this->setDirection(Direction::Up);
 }
 

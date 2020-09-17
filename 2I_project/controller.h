@@ -23,6 +23,10 @@ public:
     Model *getModel() const;
     void keyPressed(QString key);
 
+    void mapInitialization();
+    int getFutureTile(int xTile, int yTile, Direction direction);
+    bool canPlayerMove(int futureTile);
+
 public slots:
     void updateGame();
 

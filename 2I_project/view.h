@@ -9,7 +9,7 @@
 #include <QBrush>
 #include <QImage>
 #include <QKeyEvent>
-
+#include <QVector>
 #include "player.h"
 #include "controller.h"
 
@@ -25,9 +25,10 @@ public:
 
     //function
     void keyPressEvent(QKeyEvent *event);
-    void displayMap(Player *player);
+    void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
     void resetView();
+private:
 
 };
 

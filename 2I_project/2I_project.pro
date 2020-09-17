@@ -18,17 +18,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     controller.cpp \
     element.cpp \
+    health.cpp \
     main.cpp \
+    map.cpp \
     model.cpp \
     player.cpp \
+    projectile.cpp \
+    resource.cpp \
     unit.cpp \
     view.cpp
 
 HEADERS += \
     controller.h \
     element.h \
+    health.h \
+    map.h \
     model.h \
     player.h \
+    projectile.h \
+    resource.h \
     unit.h \
     view.h
 

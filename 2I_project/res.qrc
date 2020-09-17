@@ -16,4 +16,7 @@
         <file>images/map.png</file>
         <file>images/player_down.png</file>
     </qresource>
+    <qresource prefix="/maps">
+        <file>maps/map_matrix.txt</file>
+    </qresource>
 </RCC>

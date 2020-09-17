@@ -20,10 +20,18 @@ public:
     int getYCoord() const;
     void setYCoord(int value);
 
+    int getXTile() const;
+    void setXTile(int value);
+
+    int getYTile() const;
+    void setYTile(int value);
+
 private:
     QPixmap tile;
     int xCoord;
     int yCoord;
+    int xTile;
+    int yTile;
 
 };
 

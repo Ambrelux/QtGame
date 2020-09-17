@@ -36,3 +36,23 @@ void Element::setYCoord(int value)
     this->yCoord = value;
 }
 
+int Element::getXTile() const
+{
+    return xTile;
+}
+
+void Element::setXTile(int value)
+{
+    xTile = value;
+}
+
+int Element::getYTile() const
+{
+    return yTile;
+}
+
+void Element::setYTile(int value)
+{
+    yTile = value;
+}
+
