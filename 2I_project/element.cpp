@@ -14,7 +14,6 @@ QPixmap Element::getTile()
 void Element::setTile(QString _tile)
 {
     this->tile=QPixmap(":/images/images/player_"+_tile+".png");
-    qDebug() << this->tile;
 }
 
 int Element::getXCoord() const
