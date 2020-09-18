@@ -43,7 +43,43 @@ void View::displayPlayer(Player *player)
 {
     QGraphicsPixmapItem *pixmapPlayer = new QGraphicsPixmapItem(player->getTile());
     pixmapPlayer->setPos(player->getXCoord(),player->getYCoord());
-    this->scene->addItem(pixmapPlayer);  
+    this->scene->addItem(pixmapPlayer);
+}
+
+void View::displayProjectile(Player *player)
+{
+    if(player->getDirection() == Direction::Up)
+    {
+        Projectile *projectile = new Projectile(player->getXTile() - 1,player->getYTile());
+        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
+        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
+        this->scene->addItem(pixmapProjectile);
+        qDebug() << "test";
+    }
+    else if (player->getDirection() == Direction::Down)
+    {
+        Projectile *projectile = new Projectile(player->getXTile() + 1,player->getYTile());
+        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
+        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
+        this->scene->addItem(pixmapProjectile);
+    }
+    else if (player->getDirection() == Direction::Left)
+    {
+        Projectile *projectile = new Projectile(player->getXTile(),player->getYTile() - 1);
+        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
+        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
+        this->scene->addItem(pixmapProjectile);
+    }
+    else if (player->getDirection() == Direction::Right)
+    {
+        Projectile *projectile = new Projectile(player->getXTile()-1,player->getYTile() + 1);
+        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
+        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
+        this->scene->addItem(pixmapProjectile);
+    }
+
+
+
 }
 
 void View::resetView()

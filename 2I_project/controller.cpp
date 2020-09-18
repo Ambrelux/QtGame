@@ -76,7 +76,7 @@ void Controller::keyPressed(QString key)
     {
         if(this->model->getPlayer()->getProjectileQuantity() > 0)
         {
-
+            this->view->displayProjectile(this->model->getPlayer());
 
         }
 

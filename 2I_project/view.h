@@ -12,6 +12,7 @@
 #include <QVector>
 #include "player.h"
 #include "controller.h"
+#include "projectile.h"
 
 class View : public QGraphicsView
 {
@@ -27,6 +28,10 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
+    void displayProjectile(Player *player);
+
+
+
     void resetView();
 private:
 

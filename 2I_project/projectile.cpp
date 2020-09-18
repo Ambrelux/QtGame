@@ -22,7 +22,7 @@ bool Projectile::moveProjectile(Direction direction)
     int diffX = this->getXTile() - this->getInitialXTile();
     int diffY = this->getYTile() - this->getInitialYTile();
 
-    if(diffX < this->getMaxDistance() && diffX > -this->getMaxDistance() && diffY < this->getMaxDistance() && diffY > -this->getMaxDistance())
+    if(diffX < this->getMaxDistance() && diffX > - this->getMaxDistance() && diffY < this->getMaxDistance() && diffY > - this->getMaxDistance())
     {
         if(direction == Direction::Up)
         {
