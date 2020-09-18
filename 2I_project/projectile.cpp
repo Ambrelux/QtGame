@@ -2,5 +2,5 @@
 
 Projectile::Projectile()
 {
-
+    this->setTilePath(":/images/images/projectile");
 }

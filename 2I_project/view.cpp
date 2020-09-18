@@ -27,6 +27,8 @@ void View::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Down:
             pointerCtrl->keyPressed("down");
         break;
+        case Qt::Key_Space:
+            pointerCtrl->keyPressed("space");
     }
 }
 
