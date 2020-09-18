@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     controller.cpp \
     element.cpp \
+    enemy.cpp \
     health.cpp \
     main.cpp \
     map.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 HEADERS += \
     controller.h \
     element.h \
+    enemy.h \
     health.h \
     map.h \
     model.h \

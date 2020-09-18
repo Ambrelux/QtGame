@@ -8,7 +8,7 @@ Player::Player()
     this->setXTile(66);
     this->setYTile(57);
     this->setTilePath(":/images/images/player_");
-    this->setTile("up");
+    this->setTile("default");
     this->setDirection(Direction::Up);
 
 }

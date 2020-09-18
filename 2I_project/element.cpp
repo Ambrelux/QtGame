@@ -13,7 +13,7 @@ QPixmap Element::getTile()
 
 void Element::setTile(QString _tile)
 {
-    this->tile=QPixmap(":/images/images/player_"+_tile+".png");
+    this->tile=QPixmap(this->getTilePath()+ _tile+".png");
 }
 
 int Element::getXCoord() const
@@ -56,3 +56,12 @@ void Element::setYTile(int value)
     yTile = value;
 }
 
+QString Element::getTilePath() const
+{
+    return tilePath;
+}
+
+void Element::setTilePath(const QString &value)
+{
+    tilePath = value;
+}

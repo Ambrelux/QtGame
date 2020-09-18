@@ -26,12 +26,17 @@ public:
     int getYTile() const;
     void setYTile(int value);
 
+
+    QString getTilePath() const;
+    void setTilePath(const QString &value);
+
 private:
     QPixmap tile;
     int xCoord;
     int yCoord;
     int xTile;
     int yTile;
+    QString tilePath;
 
 };
 
