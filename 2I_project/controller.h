@@ -10,7 +10,7 @@
 
 #include "model.h"
 #include "view.h"
-
+#include "projectile.h"
 class Controller : public QWidget
 {
     Q_OBJECT
@@ -27,6 +27,13 @@ public:
     int getFutureTile(int xTile, int yTile, Direction direction);
     bool canPlayerMove(int futureTile);
 
+    void createProjectile(Direction direction);
+    void moveProjectile();
+    void removeProjectile(int vectPos);
+
+    QVector<Projectile *> getProjectileList() const;
+    void setProjectileList(const QVector<Projectile *> &value);
+
 public slots:
     void updateGame();
 
@@ -34,6 +41,7 @@ private:
     Model *model;
     View *view;
     QTimer *timer;
+    QVector<Projectile *> projectileList;
 };
 
 #endif // CONTROLLER_H

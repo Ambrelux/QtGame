@@ -26,9 +26,10 @@ void View::keyPressEvent(QKeyEvent *event)
             break;
         case Qt::Key_Down:
             pointerCtrl->keyPressed("down");
-        break;
+            break;
         case Qt::Key_Space:
             pointerCtrl->keyPressed("space");
+            break;
     }
 }
 
@@ -46,36 +47,16 @@ void View::displayPlayer(Player *player)
     this->scene->addItem(pixmapPlayer);
 }
 
-void View::displayProjectile(Player *player)
-{
-    if(player->getDirection() == Direction::Up)
+void View::displayProjectile(QVector<Projectile *>projectileList)
+{       
+    if(projectileList.size() > 0)
     {
-        Projectile *projectile = new Projectile(player->getXTile() - 1,player->getYTile());
-        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
-        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
-        this->scene->addItem(pixmapProjectile);
-        qDebug() << "test";
-    }
-    else if (player->getDirection() == Direction::Down)
-    {
-        Projectile *projectile = new Projectile(player->getXTile() + 1,player->getYTile());
-        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
-        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
-        this->scene->addItem(pixmapProjectile);
-    }
-    else if (player->getDirection() == Direction::Left)
-    {
-        Projectile *projectile = new Projectile(player->getXTile(),player->getYTile() - 1);
-        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
-        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
-        this->scene->addItem(pixmapProjectile);
-    }
-    else if (player->getDirection() == Direction::Right)
-    {
-        Projectile *projectile = new Projectile(player->getXTile()-1,player->getYTile() + 1);
-        QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectile->getTile());
-        pixmapProjectile->setPos(projectile->getXCoord(),projectile->getYCoord());
-        this->scene->addItem(pixmapProjectile);
+        for(int i = 0 ; i < projectileList.size() ; i++)
+        {
+            QGraphicsPixmapItem *pixmapProjectile = new QGraphicsPixmapItem(projectileList[i]->getTile());
+            pixmapProjectile->setPos(projectileList[i]->getXCoord(),projectileList[i]->getYCoord());
+            this->scene->addItem(pixmapProjectile);
+        }
     }
 
 

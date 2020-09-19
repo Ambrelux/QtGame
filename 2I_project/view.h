@@ -28,9 +28,7 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
-    void displayProjectile(Player *player);
-
-
+    void displayProjectile(QVector<Projectile *>projectileList);
 
     void resetView();
 private:
