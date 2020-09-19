@@ -47,6 +47,19 @@ void View::displayPlayer(Player *player)
     this->scene->addItem(pixmapPlayer);
 }
 
+void View::displayEnemy(QVector<Enemy *> enemyList)
+{
+    if(enemyList.size() > 0)
+    {
+        for(int i = 0 ; i < enemyList.size() ; i++)
+        {
+            QGraphicsPixmapItem *pixmapEnemy = new QGraphicsPixmapItem(enemyList[i]->getTile());
+            pixmapEnemy->setPos(enemyList[i]->getXCoord(),enemyList[i]->getYCoord());
+            this->scene->addItem(pixmapEnemy);
+        }
+    }
+}
+
 void View::displayProjectile(QVector<Projectile *>projectileList)
 {       
     if(projectileList.size() > 0)

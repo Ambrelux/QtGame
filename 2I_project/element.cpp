@@ -65,3 +65,13 @@ void Element::setTilePath(const QString &value)
 {
     tilePath = value;
 }
+
+Direction Element::getDirection() const
+{
+    return direction;
+}
+
+void Element::setDirection(const Direction &value)
+{
+    direction = value;
+}

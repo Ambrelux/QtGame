@@ -1,13 +1,14 @@
 #include "enemy.h"
 
 
-Enemy::Enemy()
+Enemy::Enemy(int _xTile, int _yTile, int _healthPoint, QString studentType)
 {
-    this->setXCoord(60*32);
-    this->setYCoord(50*32);
-    this->setXTile(60);
-    this->setYTile(50);
-    this->setTilePath(":/images/images/student/student_");
+    this->setXCoord(_xTile*32);
+    this->setYCoord(_yTile*32);
+    this->setXTile(_xTile);
+    this->setYTile(_yTile);
+    this->setTilePath(":/images/images/student/" + studentType);
     this->setTile("default");
     this->setDirection(Direction::Down);
+    this->setHealthPoint(_healthPoint);
 }

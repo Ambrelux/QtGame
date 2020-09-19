@@ -15,16 +15,6 @@ void Unit::setHealthPoint(int value)
     healthPoint = value;
 }
 
-Direction Unit::getDirection() const
-{
-    return direction;
-}
-
-void Unit::setDirection(const Direction &value)
-{
-    direction = value;
-}
-
 void Unit::move(Direction direction)
 {
 

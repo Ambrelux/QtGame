@@ -5,6 +5,11 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
+enum class Direction {
+    Up,Down,Left,Right
+
+};
+
 class Element: public QObject{
 
     Q_OBJECT
@@ -30,6 +35,9 @@ public:
     QString getTilePath() const;
     void setTilePath(const QString &value);
 
+    Direction getDirection() const;
+    void setDirection(const Direction &value);
+
 private:
     QPixmap tile;
     int xCoord;
@@ -37,6 +45,7 @@ private:
     int xTile;
     int yTile;
     QString tilePath;
+    Direction direction;
 
 };
 

@@ -13,6 +13,7 @@
 #include "player.h"
 #include "controller.h"
 #include "projectile.h"
+#include "enemy.h"
 
 class View : public QGraphicsView
 {
@@ -28,6 +29,7 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
+    void displayEnemy(QVector<Enemy *>enemyList);
     void displayProjectile(QVector<Projectile *>projectileList);
 
     void resetView();

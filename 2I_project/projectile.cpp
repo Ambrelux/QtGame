@@ -1,6 +1,6 @@
 #include "projectile.h"
 
-Projectile::Projectile(int _xTile, int _yTile)
+Projectile::Projectile(int _xTile, int _yTile, Direction _direction)
 {
     this->setXTile(_xTile);
     this->setYTile(_yTile);
@@ -13,6 +13,9 @@ Projectile::Projectile(int _xTile, int _yTile)
 
     this->setTilePath(":/images/images/item/");
     this->setTile("homework");
+
+    this->setDirection(_direction);
+
     this->setMaxDistance(3);
 
 }

@@ -19,6 +19,7 @@ void Controller::updateGame()
     this->view->resetView();
     this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
     this->view->displayPlayer(this->getModel()->getPlayer());
+    this->view->displayEnemy(this->getModel()->getEnemyList());
     this->moveProjectile();
     this->view->displayProjectile(this->getProjectileList());
     timer->start(10);
@@ -159,25 +160,25 @@ void Controller::createProjectile(Direction direction)
     if(direction == Direction::Up)
     {
         QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile()));
+        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
         this->setProjectileList(vect);
     }
     else if (direction == Direction::Down)
     {
         QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile()));
+        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
         this->setProjectileList(vect);
     }
     else if (direction == Direction::Left)
     {
         QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile()));
+        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
         this->setProjectileList(vect);
     }
     else if (direction == Direction::Right)
     {
         QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile()));
+        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
         this->setProjectileList(vect);
     }
 }
@@ -188,7 +189,11 @@ void Controller::moveProjectile()
     {
         for(int i = 0 ; i < this->getProjectileList().size() ; i++)
         {
-            if(!this->getProjectileList()[i]->moveProjectile(this->model->getPlayer()->getDirection()))
+            if(!this->getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()))
+            {
+                removeProjectile(i);
+            }
+            else if(!this->getProjectileList()[i]->moveProjectile(this->getProjectileList()[i]->getDirection()))
             {
                 removeProjectile(i);
             }

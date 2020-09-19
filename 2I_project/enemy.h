@@ -5,7 +5,7 @@
 class Enemy : public Unit
 {
 public:
-    Enemy();
+    Enemy(int _xTile, int _yTile, int _healthPoint, QString studentType);
 };
 
 #endif // ENEMY_H
