@@ -143,13 +143,41 @@ int Controller::getFutureTile(int xTile, int yTile, Direction direction)
 
 bool Controller::canPlayerMove(int futureTile)
 {
-    if(futureTile == 1)
+    if(futureTile == 1 && !checkCollisionPlayerEnemy())
     {
         return true;
     }
-    else if(futureTile == 0)
+    else if(futureTile == 0 || checkCollisionPlayerEnemy())
     {
         return false;
+    }
+
+    return false;
+}
+
+bool Controller::checkCollisionPlayerEnemy()
+{
+    if(this->getModel()->getEnemyList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getModel()->getEnemyList().size() ; i++)
+        {
+            if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getModel()->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getEnemyList()[i]->getXTile())
+            {
+                return true;
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getModel()->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getEnemyList()[i]->getXTile())
+            {
+                return true;
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getModel()->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getEnemyList()[i]->getYTile())
+            {
+                return true;
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getModel()->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getEnemyList()[i]->getYTile())
+            {
+                return true;
+            }
+        }
     }
 
     return false;

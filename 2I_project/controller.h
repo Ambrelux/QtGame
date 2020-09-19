@@ -26,6 +26,7 @@ public:
     void mapInitialization();
     int getFutureTile(int xTile, int yTile, Direction direction);
     bool canPlayerMove(int futureTile);
+    bool checkCollisionPlayerEnemy();
 
     void createProjectile(Direction direction);
     void moveProjectile();
