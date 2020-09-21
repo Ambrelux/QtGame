@@ -2,6 +2,11 @@
 #include <QtDebug>
 Controller::Controller(View *view, Model *model)
 {
+    QVector<Enemy *> vect = this->getEnemyList();
+    vect.push_back(new Enemy(60,50,5,"enemy_"));
+    vect.push_back(new Enemy(55,50,5,"student_"));
+    this->setEnemyList(vect);
+
     this->view = view;
     this->model = model;
     this->timer =  new QTimer();
@@ -19,31 +24,13 @@ void Controller::updateGame()
     this->view->resetView();
     this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
     this->view->displayPlayer(this->getModel()->getPlayer());
-    this->view->displayEnemy(this->getModel()->getEnemyList());
-    this->moveProjectile();
+    this->moveProjectiles();
+    this->checkCollisionProjectileEnemy();
     this->view->displayProjectile(this->getProjectileList());
+    this->view->displayEnemy(this->getEnemyList());
     timer->start(10);
 }
 
-QVector<Projectile *> Controller::getProjectileList() const
-{
-    return projectileList;
-}
-
-void Controller::setProjectileList(const QVector<Projectile *> &value)
-{
-    projectileList = value;
-}
-
-void Controller::setModel(Model *value)
-{
-    model = value;
-}
-
-Model *Controller::getModel() const
-{
-    return model;
-}
 
 void Controller::keyPressed(QString key)
 {
@@ -157,23 +144,23 @@ bool Controller::canPlayerMove(int futureTile)
 
 bool Controller::checkCollisionPlayerEnemy()
 {
-    if(this->getModel()->getEnemyList().size() > 0)
+    if(this->getEnemyList().size() > 0)
     {
-        for(int i = 0 ; i < this->getModel()->getEnemyList().size() ; i++)
+        for(int i = 0 ; i < this->getEnemyList().size() ; i++)
         {
-            if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getModel()->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getEnemyList()[i]->getXTile())
+            if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
                 return true;
             }
-            else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getModel()->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getEnemyList()[i]->getXTile())
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
                 return true;
             }
-            else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getModel()->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getEnemyList()[i]->getYTile())
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
                 return true;
             }
-            else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getModel()->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getEnemyList()[i]->getYTile())
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
                 return true;
             }
@@ -211,28 +198,123 @@ void Controller::createProjectile(Direction direction)
     }
 }
 
-void Controller::moveProjectile()
+void Controller::moveProjectiles()
 {
     if(this->getProjectileList().size() > 0)
     {
         for(int i = 0 ; i < this->getProjectileList().size() ; i++)
         {
-            if(!this->getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()))
+            if(getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) && checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
+            {
+                if(this->getProjectileList()[i]->getDirection() == Direction::Up)
+                {
+                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() - 1);
+                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() - 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Down)
+                {
+                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() + 1);
+                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() + 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Left)
+                {
+                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() - 1);
+                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() - 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Right)
+                {
+                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() + 1);
+                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() + 32);
+                }
+            }
+            else if (!getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) || !checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
             {
                 removeProjectile(i);
             }
-            else if(!this->getProjectileList()[i]->moveProjectile(this->getProjectileList()[i]->getDirection()))
+        }
+    }
+}
+
+
+
+void Controller::checkCollisionProjectileEnemy()
+{
+    if(this->getProjectileList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+        {
+            if(this->getEnemyList().size() > 0)
             {
-                removeProjectile(i);
+                for(int j = 0 ; j < this->getEnemyList().size() ; j++)
+                {
+                    if(this->getProjectileList()[i]->getXTile() == this->getEnemyList()[j]->getXTile() && this->getProjectileList()[i]->getYTile() == this->getEnemyList()[j]->getYTile())
+                    {
+                        removeProjectile(i);
+                        removeEnemy(j);
+                    }
+                }
             }
 
         }
+
     }
+}
+
+
+QVector<Enemy *> Controller::getEnemyList() const
+{
+    return enemyList;
+}
+
+void Controller::setEnemyList(const QVector<Enemy *> &value)
+{
+    enemyList = value;
+}
+
+void Controller::removeEnemy(int vectPos)
+{
+    delete this->enemyList[vectPos];
+    this->enemyList.erase(this->enemyList.begin() + vectPos);
+}
+
+QVector<Projectile *> Controller::getProjectileList() const
+{
+    return projectileList;
+}
+
+void Controller::setProjectileList(const QVector<Projectile *> &value)
+{
+    projectileList = value;
 }
 
 void Controller::removeProjectile(int vectPos)
 {
     delete this->projectileList[vectPos];
     this->projectileList.erase(this->projectileList.begin() + vectPos);
+}
+
+bool Controller::checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance)
+{
+    int diffX = xTile - xInitialTile;
+    int diffY = yTile - yInitialTile;
+
+    if(diffX < maxDistance && diffX > - maxDistance && diffY < maxDistance && diffY > - maxDistance)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void Controller::setModel(Model *value)
+{
+    model = value;
+}
+
+Model *Controller::getModel() const
+{
+    return model;
 }
 

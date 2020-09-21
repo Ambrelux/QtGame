@@ -7,7 +7,6 @@ class Projectile : public Resource
 {
 public:
     Projectile(int _xTile, int _yTile, Direction _direction);
-    bool moveProjectile(Direction direction);
 
     int getInitialXTile() const;
     void setInitialXTile(int value);

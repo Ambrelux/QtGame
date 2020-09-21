@@ -17,13 +17,10 @@ public:
 
     void resetModel();
 
-    QVector<Enemy *> getEnemyList() const;
-    void setEnemyList(const QVector<Enemy *> &value);
-
 private:
     Player *player;
     Map *map;
-    QVector<Enemy *> enemyList;
+
 };
 
 #endif // MODEL_H

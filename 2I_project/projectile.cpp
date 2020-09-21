@@ -20,43 +20,6 @@ Projectile::Projectile(int _xTile, int _yTile, Direction _direction)
 
 }
 
-bool Projectile::moveProjectile(Direction direction)
-{
-    int diffX = this->getXTile() - this->getInitialXTile();
-    int diffY = this->getYTile() - this->getInitialYTile();
-
-    if(diffX < this->getMaxDistance() && diffX > - this->getMaxDistance() && diffY < this->getMaxDistance() && diffY > - this->getMaxDistance())
-    {
-        if(direction == Direction::Up)
-        {
-            this->setYTile(this->getYTile() - 1);
-            this->setYCoord(this->getYCoord() - 32);
-            return true;
-        }
-        else if (direction == Direction::Down)
-        {
-            this->setYTile(this->getYTile() + 1);
-            this->setYCoord(this->getYCoord() + 32);
-            return true;
-        }
-        else if (direction == Direction::Left)
-        {
-            this->setXTile(this->getXTile() - 1);
-            this->setXCoord(this->getXCoord() - 32);
-            return true;
-        }
-        else if (direction == Direction::Right)
-        {
-            this->setXTile(this->getXTile() + 1);
-            this->setXCoord(this->getXCoord() + 32);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
 int Projectile::getInitialXTile() const
 {
     return initialXTile;

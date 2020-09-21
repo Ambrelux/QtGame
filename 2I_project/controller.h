@@ -28,12 +28,20 @@ public:
     bool canPlayerMove(int futureTile);
     bool checkCollisionPlayerEnemy();
 
+
     void createProjectile(Direction direction);
-    void moveProjectile();
-    void removeProjectile(int vectPos);
 
     QVector<Projectile *> getProjectileList() const;
     void setProjectileList(const QVector<Projectile *> &value);
+    bool checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance);
+    void moveProjectiles();
+    void removeProjectile(int vectPos);
+
+    void checkCollisionProjectileEnemy();
+
+    QVector<Enemy *> getEnemyList() const;
+    void setEnemyList(const QVector<Enemy *> &value);
+    void removeEnemy(int vectPos);
 
 public slots:
     void updateGame();
@@ -43,6 +51,7 @@ private:
     View *view;
     QTimer *timer;
     QVector<Projectile *> projectileList;
+    QVector<Enemy *> enemyList;
 };
 
 #endif // CONTROLLER_H
