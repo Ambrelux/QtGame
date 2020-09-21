@@ -2,21 +2,6 @@
 #include <QtDebug>
 Controller::Controller(View *view, Model *model)
 {
-    QVector<Enemy *> vect = this->getEnemyList();
-    vect.push_back(new Enemy(60,50,5,"enemy_"));
-    vect.push_back(new Enemy(55,50,5,"student_"));
-    this->setEnemyList(vect);
-
-    QVector<Ammo *> vectA = this->getAmmoList();
-    vectA.push_back(new Ammo(55,47));
-    vectA.push_back(new Ammo(65,47));
-    this->setAmmoList(vectA);
-
-    QVector<Coffee *> vectC = this->getCoffeeList();
-    vectC.push_back(new Coffee(65,45));
-    vectC.push_back(new Coffee(80,45));
-    this->setCoffeeList(vectC);
-
     this->view = view;
     this->model = model;
     this->timer =  new QTimer();
@@ -115,6 +100,22 @@ void Controller::mapInitialization()
         _mapMatrix.append(line);
     }
     this->getModel()->getMap()->setMapMatrix(_mapMatrix);
+
+    QVector<Enemy *> vect = this->getEnemyList();
+    vect.push_back(new Enemy(60,50,5,"enemy_"));
+    vect.push_back(new Enemy(55,50,5,"student_"));
+    this->setEnemyList(vect);
+
+    QVector<Ammo *> vectA = this->getAmmoList();
+    vectA.push_back(new Ammo(55,47));
+    vectA.push_back(new Ammo(65,47));
+    this->setAmmoList(vectA);
+
+    QVector<Coffee *> vectC = this->getCoffeeList();
+    vectC.push_back(new Coffee(65,45));
+    vectC.push_back(new Coffee(80,45));
+    this->setCoffeeList(vectC);
+
 }
 
 int Controller::getFutureTile(int xTile, int yTile, Direction direction)
