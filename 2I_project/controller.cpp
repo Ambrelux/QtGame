@@ -2,6 +2,7 @@
 #include <QtDebug>
 Controller::Controller(View *view, Model *model)
 {
+    srand((unsigned) time(0));
     this->view = view;
     this->model = model;
     this->timer =  new QTimer();
@@ -102,7 +103,7 @@ void Controller::mapInitialization()
     this->getModel()->getMap()->setMapMatrix(_mapMatrix);
 
     QVector<Enemy *> vect = this->getEnemyList();
-    vect.push_back(new Enemy(60,50,5,"enemy_"));
+    vect.push_back(new Enemy(65,50,5,"enemy_"));
     vect.push_back(new Enemy(55,50,5,"student_"));
     this->setEnemyList(vect);
 
@@ -185,7 +186,6 @@ void Controller::checkCollisionPlayerAmmo()
             {
                 removeAmmo(i);
                 this->model->getPlayer()->setProjectileQuantity(this->model->getPlayer()->getProjectileQuantity()+1);
-                qDebug() << this->model->getPlayer()->getProjectileQuantity();
             }
         }
     }
@@ -199,10 +199,8 @@ void Controller::checkCollisionPlayerCoffee()
         {
             if(this->getModel()->getPlayer()->getYTile() == this->getCoffeeList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getCoffeeList()[i]->getXTile() && this->model->getPlayer()->getHealthPoint() < this->model->getPlayer()->getMaxHealthPoint())
             {
-                qDebug() << this->model->getPlayer()->getHealthPoint();
                 removeCoffee(i);
                 this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()+1);
-                qDebug() << this->model->getPlayer()->getHealthPoint();
             }
         }
     }
@@ -287,6 +285,7 @@ void Controller::checkCollisionProjectileEnemy()
                 {
                     if(this->getProjectileList()[i]->getXTile() == this->getEnemyList()[j]->getXTile() && this->getProjectileList()[i]->getYTile() == this->getEnemyList()[j]->getYTile())
                     {
+                        randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
                         removeProjectile(i);
                         removeEnemy(j);
                     }
@@ -295,6 +294,24 @@ void Controller::checkCollisionProjectileEnemy()
 
         }
 
+    }
+}
+
+void Controller::randomLootOnEnemy(int xTile, int yTile)
+{
+    int randomNumber = rand()%10;
+    qDebug() << randomNumber;
+    if(randomNumber == 1 || randomNumber == 2)
+    {
+        QVector<Ammo *>vectorAmmo = this->getAmmoList();
+        vectorAmmo.append(new Ammo(xTile, yTile));
+        this->setAmmoList(vectorAmmo);
+    }
+    else if(randomNumber == 3 || randomNumber == 4 || randomNumber == 5)
+    {
+        QVector<Coffee *>vectorCoffee = this->getCoffeeList();
+        vectorCoffee.append(new Coffee(xTile, yTile));
+        this->setCoffeeList(vectorCoffee);
     }
 }
 

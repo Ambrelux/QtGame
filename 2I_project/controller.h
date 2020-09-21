@@ -7,6 +7,9 @@
 #include <QTime>
 #include <QCoreApplication>
 #include <QKeyEvent>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
 
 #include "model.h"
 #include "view.h"
@@ -14,6 +17,8 @@
 #include "projectile.h"
 #include "coffee.h"
 #include "ammo.h"
+
+using namespace std;
 
 class Controller : public QWidget
 {
@@ -41,6 +46,8 @@ public:
     void removeProjectile(int vectPos);
 
     void checkCollisionProjectileEnemy();
+
+    void randomLootOnEnemy(int xTile, int yTile);
 
     QVector<Enemy *> getEnemyList() const;
     void setEnemyList(const QVector<Enemy *> &value);
