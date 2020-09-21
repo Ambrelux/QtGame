@@ -47,4 +47,8 @@
     <qresource prefix="/maps">
         <file>maps/map_matrix.txt</file>
     </qresource>
+    <qresource prefix="/sounds">
+        <file>sounds/scream.wav</file>
+        <file>sounds/whistle.wav</file>
+    </qresource>
 </RCC>

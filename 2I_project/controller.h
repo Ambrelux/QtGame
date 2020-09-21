@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QCoreApplication>
 #include <QKeyEvent>
+#include <QMediaPlayer>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -80,6 +81,10 @@ private:
     QVector<Ammo *> ammoList;
     QVector<Coffee *> coffeeList;
     QVector<Homework *> homeworkList;
+
+    QMediaPlayer whistleSound;
+    QMediaPlayer screamSound;
+
 };
 
 #endif // CONTROLLER_H

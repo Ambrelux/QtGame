@@ -7,6 +7,10 @@ Controller::Controller(View *view, Model *model)
     this->model = model;
     this->timer =  new QTimer();
     timer->connect(timer,SIGNAL(timeout()), this, SLOT(updateGame()));
+
+    this->whistleSound.setMedia(QUrl("qrc:/sounds/sounds/whistle.wav"));
+    this->screamSound.setMedia(QUrl("qrc:/sounds/sounds/scream.wav"));
+
 }
 
 void Controller::startGame(){
@@ -96,6 +100,7 @@ void Controller::keyPressed(QString key)
     }
     else if(key == "a")
     {
+        whistleSound.play();
         playerAttack();
         this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()- 0.5);
     }
@@ -352,6 +357,7 @@ void Controller::checkCollisionProjectileEnemy()
                 {
                     if(this->getProjectileList()[i]->getXTile() == this->getEnemyList()[j]->getXTile() && this->getProjectileList()[i]->getYTile() == this->getEnemyList()[j]->getYTile())
                     {
+                        screamSound.play();
                         randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
                         removeProjectile(i);
                         removeEnemy(j);
