@@ -15,6 +15,16 @@ void Unit::setHealthPoint(int value)
     healthPoint = value;
 }
 
+int Unit::getMaxHealthPoint() const
+{
+    return maxHealthPoint;
+}
+
+void Unit::setMaxHealthPoint(int value)
+{
+    maxHealthPoint = value;
+}
+
 void Unit::move(Direction direction)
 {
 

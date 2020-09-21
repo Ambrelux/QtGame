@@ -13,8 +13,12 @@ public:
     int getHealthPoint() const;
     void setHealthPoint(int value);
 
+    int getMaxHealthPoint() const;
+    void setMaxHealthPoint(int value);
+
 private:
     int healthPoint;
+    int maxHealthPoint;
 };
 
 #endif // UNIT_H

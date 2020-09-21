@@ -12,6 +12,11 @@ Controller::Controller(View *view, Model *model)
     vectA.push_back(new Ammo(65,47));
     this->setAmmoList(vectA);
 
+    QVector<Coffee *> vectC = this->getCoffeeList();
+    vectC.push_back(new Coffee(65,45));
+    vectC.push_back(new Coffee(80,45));
+    this->setCoffeeList(vectC);
+
     this->view = view;
     this->model = model;
     this->timer =  new QTimer();
@@ -29,13 +34,15 @@ void Controller::updateGame()
 {
     this->view->resetView();
     this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
-    this->view->displayPlayer(this->getModel()->getPlayer());
     this->moveProjectiles();
     this->checkCollisionProjectileEnemy();
     this->checkCollisionPlayerAmmo();
+    this->checkCollisionPlayerCoffee();
     this->view->displayProjectile(this->getProjectileList());
     this->view->displayEnemy(this->getEnemyList());
     this->view->displayAmmo(this->getAmmoList());
+    this->view->displayCoffee(this->getCoffeeList());
+    this->view->displayPlayer(this->getModel()->getPlayer());
     timer->start(10);
 }
 
@@ -183,6 +190,23 @@ void Controller::checkCollisionPlayerAmmo()
     }
 }
 
+void Controller::checkCollisionPlayerCoffee()
+{
+    if(this->getCoffeeList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getCoffeeList().size() ; i++)
+        {
+            if(this->getModel()->getPlayer()->getYTile() == this->getCoffeeList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getCoffeeList()[i]->getXTile() && this->model->getPlayer()->getHealthPoint() < this->model->getPlayer()->getMaxHealthPoint())
+            {
+                qDebug() << this->model->getPlayer()->getHealthPoint();
+                removeCoffee(i);
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()+1);
+                qDebug() << this->model->getPlayer()->getHealthPoint();
+            }
+        }
+    }
+}
+
 void Controller::createProjectile(Direction direction)
 {
     if(direction == Direction::Up)
@@ -273,6 +297,21 @@ void Controller::checkCollisionProjectileEnemy()
     }
 }
 
+bool Controller::checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance)
+{
+    int diffX = xTile - xInitialTile;
+    int diffY = yTile - yInitialTile;
+
+    if(diffX < maxDistance && diffX > - maxDistance && diffY < maxDistance && diffY > - maxDistance)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 
 QVector<Enemy *> Controller::getEnemyList() const
 {
@@ -306,21 +345,6 @@ void Controller::removeProjectile(int vectPos)
     this->projectileList.erase(this->projectileList.begin() + vectPos);
 }
 
-bool Controller::checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance)
-{
-    int diffX = xTile - xInitialTile;
-    int diffY = yTile - yInitialTile;
-
-    if(diffX < maxDistance && diffX > - maxDistance && diffY < maxDistance && diffY > - maxDistance)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 void Controller::setModel(Model *value)
 {
     model = value;
@@ -331,7 +355,6 @@ Model *Controller::getModel() const
     return model;
 }
 
-
 QVector<Coffee *> Controller::getCoffeeList() const
 {
     return coffeeList;
@@ -340,6 +363,12 @@ QVector<Coffee *> Controller::getCoffeeList() const
 void Controller::setCoffeeList(const QVector<Coffee *> &value)
 {
     coffeeList = value;
+}
+
+void Controller::removeCoffee(int vectPos)
+{
+    delete this->coffeeList[vectPos];
+    this->coffeeList.erase(this->coffeeList.begin() + vectPos);
 }
 
 QVector<Ammo *> Controller::getAmmoList() const

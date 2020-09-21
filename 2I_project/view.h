@@ -32,6 +32,7 @@ public:
     void displayEnemy(QVector<Enemy *>enemyList);
     void displayProjectile(QVector<Projectile *>projectileList);
     void displayAmmo(QVector<Ammo *>ammoList);
+    void displayCoffee(QVector<Coffee *>coffeeList);
 
     void resetView();
 private:

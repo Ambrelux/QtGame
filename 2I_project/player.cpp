@@ -11,6 +11,8 @@ Player::Player()
     this->setTile("default");
     this->setDirection(Direction::Down);
     this->setProjectileQuantity(5);
+    this->setMaxHealthPoint(5);
+    this->setHealthPoint(this->getMaxHealthPoint());
 
 }
 

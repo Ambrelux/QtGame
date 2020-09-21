@@ -86,6 +86,19 @@ void View::displayAmmo(QVector<Ammo *> ammoList)
     }
 }
 
+void View::displayCoffee(QVector<Coffee *> coffeeList)
+{
+    if(coffeeList.size() > 0)
+    {
+        for(int i = 0 ; i < coffeeList.size() ; i++)
+        {
+            QGraphicsPixmapItem *pixmapCoffee = new QGraphicsPixmapItem(coffeeList[i]->getTile());
+            pixmapCoffee->setPos(coffeeList[i]->getXCoord(),coffeeList[i]->getYCoord());
+            this->scene->addItem(pixmapCoffee);
+        }
+    }
+}
+
 void View::resetView()
 {
     delete this->scene;

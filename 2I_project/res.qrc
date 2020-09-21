@@ -42,6 +42,7 @@
         <file>images/item/homework.png</file>
         <file>images/student/enemy_default.png</file>
         <file>images/item/projectile.png</file>
+        <file>images/item/coffee.png</file>
     </qresource>
     <qresource prefix="/maps">
         <file>maps/map_matrix.txt</file>
