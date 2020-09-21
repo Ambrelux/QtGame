@@ -10,13 +10,16 @@
 
 #include "model.h"
 #include "view.h"
+#include "enemy.h"
 #include "projectile.h"
+#include "coffee.h"
+#include "ammo.h"
+
 class Controller : public QWidget
 {
     Q_OBJECT
 public:
     Controller(class View *view, class Model *model);
-    //~Controller();
 
     void startGame();
     void setModel(Model *value);
@@ -25,9 +28,9 @@ public:
 
     void mapInitialization();
     int getFutureTile(int xTile, int yTile, Direction direction);
-    bool canPlayerMove(int futureTile);
     bool checkCollisionPlayerEnemy();
-
+    void checkCollisionPlayerAmmo();
+    void checkCollisionPlayerCoffee();
 
     void createProjectile(Direction direction);
 
@@ -43,6 +46,14 @@ public:
     void setEnemyList(const QVector<Enemy *> &value);
     void removeEnemy(int vectPos);
 
+    QVector<Ammo *> getAmmoList() const;
+    void setAmmoList(const QVector<Ammo *> &value);
+    void removeAmmo(int vectPos);
+
+    QVector<Coffee *> getCoffeeList() const;
+    void setCoffeeList(const QVector<Coffee *> &value);
+    void removeCoffee(int vectPos);
+
 public slots:
     void updateGame();
 
@@ -52,6 +63,8 @@ private:
     QTimer *timer;
     QVector<Projectile *> projectileList;
     QVector<Enemy *> enemyList;
+    QVector<Ammo *> ammoList;
+    QVector<Coffee *> coffeeList;
 };
 
 #endif // CONTROLLER_H

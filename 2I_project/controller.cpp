@@ -7,6 +7,11 @@ Controller::Controller(View *view, Model *model)
     vect.push_back(new Enemy(55,50,5,"student_"));
     this->setEnemyList(vect);
 
+    QVector<Ammo *> vectA = this->getAmmoList();
+    vectA.push_back(new Ammo(55,47));
+    vectA.push_back(new Ammo(65,47));
+    this->setAmmoList(vectA);
+
     this->view = view;
     this->model = model;
     this->timer =  new QTimer();
@@ -19,6 +24,7 @@ void Controller::startGame(){
     this->view->show();
 }
 
+
 void Controller::updateGame()
 {
     this->view->resetView();
@@ -26,10 +32,14 @@ void Controller::updateGame()
     this->view->displayPlayer(this->getModel()->getPlayer());
     this->moveProjectiles();
     this->checkCollisionProjectileEnemy();
+    this->checkCollisionPlayerAmmo();
     this->view->displayProjectile(this->getProjectileList());
     this->view->displayEnemy(this->getEnemyList());
+    this->view->displayAmmo(this->getAmmoList());
     timer->start(10);
 }
+
+
 
 
 void Controller::keyPressed(QString key)
@@ -39,7 +49,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Up);
-        if(canPlayerMove(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection())))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -49,7 +59,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Down);
-        if(canPlayerMove(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection())))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -58,7 +68,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Left);
-        if(canPlayerMove(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection())))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -67,7 +77,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Right);
-        if(canPlayerMove(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection())))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -128,19 +138,6 @@ int Controller::getFutureTile(int xTile, int yTile, Direction direction)
     return 0;
 }
 
-bool Controller::canPlayerMove(int futureTile)
-{
-    if(futureTile == 1 && !checkCollisionPlayerEnemy())
-    {
-        return true;
-    }
-    else if(futureTile == 0 || checkCollisionPlayerEnemy())
-    {
-        return false;
-    }
-
-    return false;
-}
 
 bool Controller::checkCollisionPlayerEnemy()
 {
@@ -168,6 +165,22 @@ bool Controller::checkCollisionPlayerEnemy()
     }
 
     return false;
+}
+
+void Controller::checkCollisionPlayerAmmo()
+{
+    if(this->getAmmoList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getAmmoList().size() ; i++)
+        {
+            if(this->getModel()->getPlayer()->getYTile() == this->getAmmoList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getAmmoList()[i]->getXTile())
+            {
+                removeAmmo(i);
+                this->model->getPlayer()->setProjectileQuantity(this->model->getPlayer()->getProjectileQuantity()+1);
+                qDebug() << this->model->getPlayer()->getProjectileQuantity();
+            }
+        }
+    }
 }
 
 void Controller::createProjectile(Direction direction)
@@ -318,3 +331,29 @@ Model *Controller::getModel() const
     return model;
 }
 
+
+QVector<Coffee *> Controller::getCoffeeList() const
+{
+    return coffeeList;
+}
+
+void Controller::setCoffeeList(const QVector<Coffee *> &value)
+{
+    coffeeList = value;
+}
+
+QVector<Ammo *> Controller::getAmmoList() const
+{
+    return ammoList;
+}
+
+void Controller::setAmmoList(const QVector<Ammo *> &value)
+{
+    ammoList = value;
+}
+
+void Controller::removeAmmo(int vectPos)
+{
+    delete this->ammoList[vectPos];
+    this->ammoList.erase(this->ammoList.begin() + vectPos);
+}

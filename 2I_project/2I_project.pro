@@ -16,10 +16,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ammo.cpp \
+    coffee.cpp \
     controller.cpp \
     element.cpp \
     enemy.cpp \
-    health.cpp \
     main.cpp \
     map.cpp \
     model.cpp \
@@ -30,10 +31,11 @@ SOURCES += \
     view.cpp
 
 HEADERS += \
+    ammo.h \
+    coffee.h \
     controller.h \
     element.h \
     enemy.h \
-    health.h \
     map.h \
     model.h \
     player.h \

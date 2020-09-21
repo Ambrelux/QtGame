@@ -10,11 +10,11 @@
 #include <QImage>
 #include <QKeyEvent>
 #include <QVector>
-#include "player.h"
 #include "controller.h"
-#include "projectile.h"
 #include "enemy.h"
-
+#include "ammo.h"
+#include "projectile.h"
+#include "coffee.h"
 class View : public QGraphicsView
 {
     Q_OBJECT
@@ -31,6 +31,7 @@ public:
     void displayPlayer(Player *player);
     void displayEnemy(QVector<Enemy *>enemyList);
     void displayProjectile(QVector<Projectile *>projectileList);
+    void displayAmmo(QVector<Ammo *>ammoList);
 
     void resetView();
 private:

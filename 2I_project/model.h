@@ -2,7 +2,7 @@
 #define MODEL_H
 #include "player.h"
 #include "map.h"
-#include "enemy.h"
+
 
 class Model
 {

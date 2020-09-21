@@ -70,10 +70,20 @@ void View::displayProjectile(QVector<Projectile *>projectileList)
             pixmapProjectile->setPos(projectileList[i]->getXCoord(),projectileList[i]->getYCoord());
             this->scene->addItem(pixmapProjectile);
         }
+    }    
+}
+
+void View::displayAmmo(QVector<Ammo *> ammoList)
+{
+    if(ammoList.size() > 0)
+    {
+        for(int i = 0 ; i < ammoList.size() ; i++)
+        {
+            QGraphicsPixmapItem *pixmapAmmo = new QGraphicsPixmapItem(ammoList[i]->getTile());
+            pixmapAmmo->setPos(ammoList[i]->getXCoord(),ammoList[i]->getYCoord());
+            this->scene->addItem(pixmapAmmo);
+        }
     }
-
-
-
 }
 
 void View::resetView()

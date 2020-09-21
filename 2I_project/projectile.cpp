@@ -12,7 +12,7 @@ Projectile::Projectile(int _xTile, int _yTile, Direction _direction)
     this->setYCoord(_yTile*32);
 
     this->setTilePath(":/images/images/item/");
-    this->setTile("homework");
+    this->setTile("projectile");
 
     this->setDirection(_direction);
 
