@@ -21,6 +21,7 @@ SOURCES += \
     controller.cpp \
     element.cpp \
     enemy.cpp \
+    homework.cpp \
     main.cpp \
     map.cpp \
     model.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     controller.h \
     element.h \
     enemy.h \
+    homework.h \
     map.h \
     model.h \
     player.h \

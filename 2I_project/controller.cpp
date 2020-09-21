@@ -32,6 +32,16 @@ void Controller::updateGame()
     timer->start(10);
 }
 
+QVector<Homework *> Controller::getHomeworkList() const
+{
+    return homeworkList;
+}
+
+void Controller::setHomeworkList(const QVector<Homework *> &value)
+{
+    homeworkList = value;
+}
+
 
 
 
@@ -42,7 +52,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Up);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -52,7 +62,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Down);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -61,7 +71,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Left);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -70,7 +80,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Right);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()))
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
             this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
         }
@@ -83,6 +93,11 @@ void Controller::keyPressed(QString key)
             this->createProjectile(this->model->getPlayer()->getDirection());
         }
 
+    }
+    else if(key == "a")
+    {
+        playerAttack();
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()- 0.5);
     }
 
 }
@@ -103,8 +118,8 @@ void Controller::mapInitialization()
     this->getModel()->getMap()->setMapMatrix(_mapMatrix);
 
     QVector<Enemy *> vect = this->getEnemyList();
-    vect.push_back(new Enemy(65,50,5,"enemy_"));
-    vect.push_back(new Enemy(55,50,5,"student_"));
+    vect.push_back(new Enemy(65,50,4,"enemy_"));
+    vect.push_back(new Enemy(55,50,2,"student_"));
     this->setEnemyList(vect);
 
     QVector<Ammo *> vectA = this->getAmmoList();
@@ -147,6 +162,54 @@ int Controller::getFutureTile(int xTile, int yTile, Direction direction)
     return 0;
 }
 
+void Controller::playerAttack()
+{
+    if(this->getEnemyList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getEnemyList().size() ; i++)
+        {
+            if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
+            {
+                this->getEnemyList()[i]->setHealthPoint(this->getEnemyList()[i]->getHealthPoint()-2);
+                if(this->getEnemyList()[i]->getHealthPoint()<=0)
+                {
+                    randomLootOnEnemy(this->getEnemyList()[i]->getXTile(),this->getEnemyList()[i]->getYTile());
+                    removeEnemy(i);
+                }
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
+            {
+                this->getEnemyList()[i]->setHealthPoint(this->getEnemyList()[i]->getHealthPoint()-2);
+                if(this->getEnemyList()[i]->getHealthPoint()<=0)
+                {
+                    randomLootOnEnemy(this->getEnemyList()[i]->getXTile(),this->getEnemyList()[i]->getYTile());
+                    removeEnemy(i);
+                }
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
+            {
+                this->getEnemyList()[i]->setHealthPoint(this->getEnemyList()[i]->getHealthPoint()-2);
+                if(this->getEnemyList()[i]->getHealthPoint()<=0)
+                {
+                    randomLootOnEnemy(this->getEnemyList()[i]->getXTile(),this->getEnemyList()[i]->getYTile());
+                    removeEnemy(i);
+                }
+            }
+            else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
+            {
+                this->getEnemyList()[i]->setHealthPoint(this->getEnemyList()[i]->getHealthPoint()-2);
+                if(this->getEnemyList()[i]->getHealthPoint()<=0)
+                {
+                    randomLootOnEnemy(this->getEnemyList()[i]->getXTile(),this->getEnemyList()[i]->getYTile());
+                    removeEnemy(i);
+                }
+            }
+
+        }
+
+    }
+}
+
 
 bool Controller::checkCollisionPlayerEnemy()
 {
@@ -156,18 +219,22 @@ bool Controller::checkCollisionPlayerEnemy()
         {
             if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
                 return true;
             }
         }
@@ -300,7 +367,6 @@ void Controller::checkCollisionProjectileEnemy()
 void Controller::randomLootOnEnemy(int xTile, int yTile)
 {
     int randomNumber = rand()%10;
-    qDebug() << randomNumber;
     if(randomNumber == 1 || randomNumber == 2)
     {
         QVector<Ammo *>vectorAmmo = this->getAmmoList();

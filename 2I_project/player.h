@@ -9,8 +9,12 @@ public:
     unsigned int getProjectileQuantity() const;
     void setProjectileQuantity(unsigned int value);
 
+    unsigned int getHomeworkQuantity() const;
+    void setHomeworkQuantity(unsigned int value);
+
 private:
     unsigned int projectileQuantity;
+    unsigned int homeworkQuantity;
 };
 
 #endif // PLAYER_H

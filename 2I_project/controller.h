@@ -17,6 +17,7 @@
 #include "projectile.h"
 #include "coffee.h"
 #include "ammo.h"
+#include "homework.h"
 
 using namespace std;
 
@@ -33,6 +34,8 @@ public:
 
     void mapInitialization();
     int getFutureTile(int xTile, int yTile, Direction direction);
+
+    void playerAttack();
     bool checkCollisionPlayerEnemy();
     void checkCollisionPlayerAmmo();
     void checkCollisionPlayerCoffee();
@@ -61,6 +64,10 @@ public:
     void setCoffeeList(const QVector<Coffee *> &value);
     void removeCoffee(int vectPos);
 
+    QVector<Homework *> getHomeworkList() const;
+    void setHomeworkList(const QVector<Homework *> &value);
+    void removeHomework(int vectPos);
+
 public slots:
     void updateGame();
 
@@ -72,6 +79,7 @@ private:
     QVector<Enemy *> enemyList;
     QVector<Ammo *> ammoList;
     QVector<Coffee *> coffeeList;
+    QVector<Homework *> homeworkList;
 };
 
 #endif // CONTROLLER_H

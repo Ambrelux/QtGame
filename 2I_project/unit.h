@@ -10,15 +10,15 @@ public:
 
     void move(Direction direction);
 
-    int getHealthPoint() const;
-    void setHealthPoint(int value);
+    float getHealthPoint() const;
+    void setHealthPoint(float value);
 
-    int getMaxHealthPoint() const;
-    void setMaxHealthPoint(int value);
+    float getMaxHealthPoint() const;
+    void setMaxHealthPoint(float value);
 
 private:
-    int healthPoint;
-    int maxHealthPoint;
+    float healthPoint;
+    float maxHealthPoint;
 };
 
 #endif // UNIT_H

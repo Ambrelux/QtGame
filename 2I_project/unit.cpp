@@ -5,22 +5,22 @@ Unit::Unit()
 
 }
 
-int Unit::getHealthPoint() const
+float Unit::getHealthPoint() const
 {
     return healthPoint;
 }
 
-void Unit::setHealthPoint(int value)
+void Unit::setHealthPoint(float value)
 {
     healthPoint = value;
 }
 
-int Unit::getMaxHealthPoint() const
+float Unit::getMaxHealthPoint() const
 {
     return maxHealthPoint;
 }
 
-void Unit::setMaxHealthPoint(int value)
+void Unit::setMaxHealthPoint(float value)
 {
     maxHealthPoint = value;
 }

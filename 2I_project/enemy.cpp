@@ -8,7 +8,7 @@ Enemy::Enemy(int _xTile, int _yTile, int _healthPoint, QString studentType)
     this->setXTile(_xTile);
     this->setYTile(_yTile);
     this->setTilePath(":/images/images/student/" + studentType);
-    this->setTile("default");
+    this->setTile("down");
     this->setDirection(Direction::Down);
     this->setHealthPoint(_healthPoint);
 }

@@ -26,3 +26,13 @@ void Player::setProjectileQuantity(unsigned int value)
     projectileQuantity = value;
 }
 
+unsigned int Player::getHomeworkQuantity() const
+{
+    return homeworkQuantity;
+}
+
+void Player::setHomeworkQuantity(unsigned int value)
+{
+    homeworkQuantity = value;
+}
+
