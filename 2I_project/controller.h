@@ -34,13 +34,14 @@ public:
     void keyPressed(QString key);
 
     void mapInitialization();
-    int getFutureTile(int xTile, int yTile, Direction direction);
+    bool getFutureTile(int xTile, int yTile, Direction direction);
 
     void playerAttack();
     bool checkCollisionPlayerEnemy();
     bool checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction);
     void checkCollisionPlayerAmmo();
     void checkCollisionPlayerCoffee();
+    void checkCollisionPlayerHomework();
 
     void createProjectile(Direction direction);
 

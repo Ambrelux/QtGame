@@ -13,6 +13,7 @@ Player::Player()
     this->setProjectileQuantity(5);
     this->setMaxHealthPoint(5);
     this->setHealthPoint(this->getMaxHealthPoint());
+    this->setHomeworkQuantity(0);
 
 }
 

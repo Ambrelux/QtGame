@@ -15,6 +15,7 @@
 #include "ammo.h"
 #include "projectile.h"
 #include "coffee.h"
+#include "homework.h"
 class View : public QGraphicsView
 {
     Q_OBJECT
@@ -33,6 +34,7 @@ public:
     void displayProjectile(QVector<Projectile *>projectileList);
     void displayAmmo(QVector<Ammo *>ammoList);
     void displayCoffee(QVector<Coffee *>coffeeList);
+    void displayHomework(QVector<Homework *>homeworkList);
 
     void resetView();
 private:

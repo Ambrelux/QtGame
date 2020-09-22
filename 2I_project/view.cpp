@@ -102,6 +102,19 @@ void View::displayCoffee(QVector<Coffee *> coffeeList)
     }
 }
 
+void View::displayHomework(QVector<Homework *> homeworkList)
+{
+    if(homeworkList.size() > 0)
+    {
+        for(int i = 0 ; i < homeworkList.size() ; i++)
+        {
+            QGraphicsPixmapItem *pixmaphomework = new QGraphicsPixmapItem(homeworkList[i]->getTile());
+            pixmaphomework->setPos(homeworkList[i]->getXCoord(),homeworkList[i]->getYCoord());
+            this->scene->addItem(pixmaphomework);
+        }
+    }
+}
+
 void View::resetView()
 {
     delete this->scene;

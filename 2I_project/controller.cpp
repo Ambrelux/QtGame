@@ -24,36 +24,25 @@ void Controller::updateGame()
     this->view->resetView();
     this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
     this->moveProjectiles();
-    this->checkCollisionProjectileEnemy();
-    this->checkCollisionPlayerAmmo();
-    this->checkCollisionPlayerCoffee();
-    this->view->displayProjectile(this->getProjectileList());
-    this->view->displayEnemy(this->getEnemyList());
-    this->view->displayAmmo(this->getAmmoList());
-    this->view->displayCoffee(this->getCoffeeList());
-    this->view->displayPlayer(this->getModel()->getPlayer());
     this->setTimeIterator(this->getTimeIterator() + 1);
-    if(this->getTimeIterator()>=10)
+    if(this->getTimeIterator()>10)
     {
         moveEnemies();
         this->setTimeIterator(0);
     }
+    this->checkCollisionProjectileEnemy();
+    this->checkCollisionPlayerAmmo();
+    this->checkCollisionPlayerCoffee();
+    this->checkCollisionPlayerHomework();
+    this->view->displayProjectile(this->getProjectileList());
+    this->view->displayEnemy(this->getEnemyList());
+    this->view->displayAmmo(this->getAmmoList());
+    this->view->displayCoffee(this->getCoffeeList());
+    this->view->displayHomework(this->getHomeworkList());
+    this->view->displayPlayer(this->getModel()->getPlayer());
 
     timer->start(10);
 }
-
-QVector<Homework *> Controller::getHomeworkList() const
-{
-    return homeworkList;
-}
-
-void Controller::setHomeworkList(const QVector<Homework *> &value)
-{
-    homeworkList = value;
-}
-
-
-
 
 void Controller::keyPressed(QString key)
 {
@@ -120,6 +109,8 @@ void Controller::mapInitialization()
     QTextStream stream(&file);
     QVector<QString> _mapMatrix;
     QString line;
+    QVector<Enemy *> vectEnemy = this->getEnemyList();
+    QVector<Homework *> vectHomework = this->getHomeworkList();
 
     while(! stream.atEnd())
     {
@@ -128,78 +119,55 @@ void Controller::mapInitialization()
     }
     this->getModel()->getMap()->setMapMatrix(_mapMatrix);
 
-    // Ennemies
-    QVector<Enemy *> vect = this->getEnemyList();
-    // Library
-    vect.push_back(new Enemy(26,14,4,"enemy_"));
-    vect.push_back(new Enemy(33,34,2,"student_"));
-    vect.push_back(new Enemy(25,29,4,"enemy_"));
-    vect.push_back(new Enemy(33,19,2,"student_"));
-    // Laboratory
-    vect.push_back(new Enemy(75,17,4,"enemy_"));
-    vect.push_back(new Enemy(65,21,2,"student_"));
-    // Classroom
-    // First
-    vect.push_back(new Enemy(42,15,4,"enemy_"));
-    vect.push_back(new Enemy(44,29,2,"student_"));
-    // Second
-    vect.push_back(new Enemy(30,47,4,"enemy_"));
-    vect.push_back(new Enemy(38,48,2,"student_"));
-    // Bathroom
-    vect.push_back(new Enemy(53,25,4,"enemy_"));
-    // Hall
-    vect.push_back(new Enemy(42,43,4,"enemy_"));
-    vect.push_back(new Enemy(50,36,2,"student_"));
-    vect.push_back(new Enemy(63,34,4,"enemy_"));
-    vect.push_back(new Enemy(76,35,2,"student_"));
-    // Field
-    vect.push_back(new Enemy(50,46,4,"enemy_"));
-    vect.push_back(new Enemy(55,50,2,"student_"));
-    // Playground
-    vect.push_back(new Enemy(75,54,4,"enemy_"));
-    vect.push_back(new Enemy(83,48,2,"student_"));
-    vect.push_back(new Enemy(77,42,4,"enemy_"));
+    for(int i = 0 ; i < this->model->getMap()->getMapMatrix().size() ; i++)
+    {
+        for (int j = 0 ; j < this->model->getMap()->getMapMatrix().at(i).size() ; j++)
+        {
+            if(this->model->getMap()->getMapMatrix().at(i).at(j) == "s")
+            {
+                vectEnemy.append(new Enemy(j,i,2,"student_"));
+            }
+            else if(this->model->getMap()->getMapMatrix().at(i).at(j) == "e")
+            {
+                vectEnemy.append(new Enemy(j,i,4,"enemy_"));
+            }
+            else if(this->model->getMap()->getMapMatrix().at(i).at(j) == "p")
+            {
+                vectHomework.append(new Homework(j,i));
+            }
+        }
+    }
 
-    this->setEnemyList(vect);
-
-    QVector<Ammo *> vectA = this->getAmmoList();
-    vectA.push_back(new Ammo(55,47));
-    vectA.push_back(new Ammo(65,47));
-    this->setAmmoList(vectA);
-
-    QVector<Coffee *> vectC = this->getCoffeeList();
-    vectC.push_back(new Coffee(65,45));
-    vectC.push_back(new Coffee(80,45));
-    this->setCoffeeList(vectC);
-
+    this->setEnemyList(vectEnemy);
+    this->setHomeworkList(vectHomework);
 }
 
-int Controller::getFutureTile(int xTile, int yTile, Direction direction)
+bool Controller::getFutureTile(int xTile, int yTile, Direction direction)
 {
     QString futureTile;
-    bool ok;
 
     if(direction == Direction::Up)
     {
         futureTile = this->getModel()->getMap()->getMapMatrix().at(yTile-1).at(xTile);
-        return futureTile.toInt(&ok,10);
     }
     else if(direction == Direction::Down){
         futureTile = this->getModel()->getMap()->getMapMatrix().at(yTile+1).at(xTile);
-        return futureTile.toInt(&ok,10);
     }
     else if(direction == Direction::Left)
     {
         futureTile = this->getModel()->getMap()->getMapMatrix().at(yTile).at(xTile-1);
-        return futureTile.toInt(&ok,10);
     }
     else if(direction == Direction::Right)
     {
         futureTile = this->getModel()->getMap()->getMapMatrix().at(yTile).at(xTile+1);
-        return futureTile.toInt(&ok,10);
     }
 
-    return 0;
+    if(futureTile != "0")
+    {
+        return true;
+    }
+
+    return false;
 }
 
 void Controller::playerAttack()
@@ -341,6 +309,21 @@ void Controller::checkCollisionPlayerCoffee()
     }
 }
 
+void Controller::checkCollisionPlayerHomework()
+{
+    if(this->getHomeworkList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getHomeworkList().size() ; i++)
+        {
+            if(this->getModel()->getPlayer()->getYTile() == this->getHomeworkList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getHomeworkList()[i]->getXTile())
+            {
+                removeHomework(i);
+                this->model->getPlayer()->setHomeworkQuantity(this->model->getPlayer()->getHomeworkQuantity()+1);
+            }
+        }
+    }
+}
+
 void Controller::createProjectile(Direction direction)
 {
     if(direction == Direction::Up)
@@ -424,6 +407,7 @@ void Controller::checkCollisionProjectileEnemy()
                         randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
                         removeProjectile(i);
                         removeEnemy(j);
+                        break;
                     }
                 }
             }
@@ -600,4 +584,20 @@ void Controller::removeAmmo(int vectPos)
 {
     delete this->ammoList[vectPos];
     this->ammoList.erase(this->ammoList.begin() + vectPos);
+}
+
+QVector<Homework *> Controller::getHomeworkList() const
+{
+    return homeworkList;
+}
+
+void Controller::setHomeworkList(const QVector<Homework *> &value)
+{
+    homeworkList = value;
+}
+
+void Controller::removeHomework(int vectPos)
+{
+    delete this->homeworkList[vectPos];
+    this->homeworkList.erase(this->homeworkList.begin() + vectPos);
 }
