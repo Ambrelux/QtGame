@@ -122,9 +122,40 @@ void Controller::mapInitialization()
     }
     this->getModel()->getMap()->setMapMatrix(_mapMatrix);
 
+    // Ennemies
     QVector<Enemy *> vect = this->getEnemyList();
-    vect.push_back(new Enemy(65,50,4,"enemy_"));
+    // Library
+    vect.push_back(new Enemy(26,14,4,"enemy_"));
+    vect.push_back(new Enemy(33,34,2,"student_"));
+    vect.push_back(new Enemy(25,29,4,"enemy_"));
+    vect.push_back(new Enemy(33,19,2,"student_"));
+//    // Laboratory
+    vect.push_back(new Enemy(75,17,4,"enemy_"));
+    vect.push_back(new Enemy(65,21,2,"student_"));
+//    // Classroom
+//    // First
+    vect.push_back(new Enemy(42,15,4,"enemy_"));
+    vect.push_back(new Enemy(44,29,2,"student_"));
+//    // Second
+    vect.push_back(new Enemy(30,47,4,"enemy_"));
+    vect.push_back(new Enemy(38,48,2,"student_"));
+//    // Bathroom
+    vect.push_back(new Enemy(53,25,4,"enemy_"));
+//    // Hall
+    vect.push_back(new Enemy(42,43,4,"enemy_"));
+    vect.push_back(new Enemy(50,36,2,"student_"));
+    vect.push_back(new Enemy(63,34,4,"enemy_"));
+    vect.push_back(new Enemy(76,35,2,"student_"));
+//    // Field
+    vect.push_back(new Enemy(50,46,4,"enemy_"));
     vect.push_back(new Enemy(55,50,2,"student_"));
+//    // Playground
+    vect.push_back(new Enemy(75,54,4,"enemy_"));
+    vect.push_back(new Enemy(83,48,2,"student_"));
+    vect.push_back(new Enemy(77,42,4,"enemy_"));
+
+
+
     this->setEnemyList(vect);
 
     QVector<Ammo *> vectA = this->getAmmoList();
@@ -384,6 +415,12 @@ void Controller::randomLootOnEnemy(int xTile, int yTile)
         QVector<Coffee *>vectorCoffee = this->getCoffeeList();
         vectorCoffee.append(new Coffee(xTile, yTile));
         this->setCoffeeList(vectorCoffee);
+    }
+    else if(randomNumber == 6 || randomNumber == 7)
+    {
+        QVector<Homework *>vectorHomework = this->getHomeworkList();
+        vectorHomework.append(new Homework(xTile, yTile));
+        this->setHomeworkList(vectorHomework);
     }
 }
 
