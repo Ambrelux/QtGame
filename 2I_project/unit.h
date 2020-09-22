@@ -8,7 +8,7 @@ class Unit : public Element{
 public:
     Unit();
 
-    void move(Direction direction);
+    void move();
 
     float getHealthPoint() const;
     void setHealthPoint(float value);

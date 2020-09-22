@@ -11,4 +11,15 @@ Enemy::Enemy(int _xTile, int _yTile, int _healthPoint, QString studentType)
     this->setTile("down");
     this->setDirection(Direction::Down);
     this->setHealthPoint(_healthPoint);
+    this->setNbMove(0);
+}
+
+int Enemy::getNbMove() const
+{
+    return nbMove;
+}
+
+void Enemy::setNbMove(int value)
+{
+    nbMove = value;
 }

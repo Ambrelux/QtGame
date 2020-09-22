@@ -7,10 +7,9 @@ Controller::Controller(View *view, Model *model)
     this->model = model;
     this->timer =  new QTimer();
     timer->connect(timer,SIGNAL(timeout()), this, SLOT(updateGame()));
-
     this->whistleSound.setMedia(QUrl("qrc:/sounds/sounds/whistle.wav"));
     this->screamSound.setMedia(QUrl("qrc:/sounds/sounds/scream.wav"));
-
+    this->setTimeIterator(0);
 }
 
 void Controller::startGame(){
@@ -33,6 +32,13 @@ void Controller::updateGame()
     this->view->displayAmmo(this->getAmmoList());
     this->view->displayCoffee(this->getCoffeeList());
     this->view->displayPlayer(this->getModel()->getPlayer());
+    this->setTimeIterator(this->getTimeIterator() + 1);
+    if(this->getTimeIterator()>=10)
+    {
+        moveEnemies();
+        this->setTimeIterator(0);
+    }
+
     timer->start(10);
 }
 
@@ -58,7 +64,7 @@ void Controller::keyPressed(QString key)
         this->model->getPlayer()->setDirection(Direction::Up);
         if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
-            this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
+            this->model->getPlayer()->move();
         }
 
     }
@@ -68,7 +74,7 @@ void Controller::keyPressed(QString key)
         this->model->getPlayer()->setDirection(Direction::Down);
         if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
-            this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
+            this->model->getPlayer()->move();
         }
     }
     else if(key == "left")
@@ -77,7 +83,7 @@ void Controller::keyPressed(QString key)
         this->model->getPlayer()->setDirection(Direction::Left);
         if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
-            this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
+            this->model->getPlayer()->move();
         }
     }
     else if(key == "right")
@@ -86,7 +92,7 @@ void Controller::keyPressed(QString key)
         this->model->getPlayer()->setDirection(Direction::Right);
         if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
         {
-            this->model->getPlayer()->move(this->model->getPlayer()->getDirection());
+            this->model->getPlayer()->move();
         }
     }
     else if(key == "space")
@@ -129,32 +135,30 @@ void Controller::mapInitialization()
     vect.push_back(new Enemy(33,34,2,"student_"));
     vect.push_back(new Enemy(25,29,4,"enemy_"));
     vect.push_back(new Enemy(33,19,2,"student_"));
-//    // Laboratory
+    // Laboratory
     vect.push_back(new Enemy(75,17,4,"enemy_"));
     vect.push_back(new Enemy(65,21,2,"student_"));
-//    // Classroom
-//    // First
+    // Classroom
+    // First
     vect.push_back(new Enemy(42,15,4,"enemy_"));
     vect.push_back(new Enemy(44,29,2,"student_"));
-//    // Second
+    // Second
     vect.push_back(new Enemy(30,47,4,"enemy_"));
     vect.push_back(new Enemy(38,48,2,"student_"));
-//    // Bathroom
+    // Bathroom
     vect.push_back(new Enemy(53,25,4,"enemy_"));
-//    // Hall
+    // Hall
     vect.push_back(new Enemy(42,43,4,"enemy_"));
     vect.push_back(new Enemy(50,36,2,"student_"));
     vect.push_back(new Enemy(63,34,4,"enemy_"));
     vect.push_back(new Enemy(76,35,2,"student_"));
-//    // Field
+    // Field
     vect.push_back(new Enemy(50,46,4,"enemy_"));
     vect.push_back(new Enemy(55,50,2,"student_"));
-//    // Playground
+    // Playground
     vect.push_back(new Enemy(75,54,4,"enemy_"));
     vect.push_back(new Enemy(83,48,2,"student_"));
     vect.push_back(new Enemy(77,42,4,"enemy_"));
-
-
 
     this->setEnemyList(vect);
 
@@ -448,6 +452,58 @@ QVector<Enemy *> Controller::getEnemyList() const
 void Controller::setEnemyList(const QVector<Enemy *> &value)
 {
     enemyList = value;
+}
+
+void Controller::moveEnemies()
+{
+    if(this->enemyList.size() > 0 )
+    {
+        for(int i = 0 ; i < this->enemyList.size() ; i++)
+        {
+            if(this->enemyList[i]->getNbMove() == 0)
+            {
+                int randomNumber = rand()%4;
+                switch(randomNumber)
+                {
+                case 0:
+                    this->enemyList[i]->setDirection(Direction::Up);
+                    this->enemyList[i]->setTile("up");
+                    this->enemyList[i]->move();
+                    break;
+                case 1:
+                    this->enemyList[i]->setDirection(Direction::Down);
+                    this->enemyList[i]->setTile("down");
+                    this->enemyList[i]->move();
+                    break;
+                case 2:
+                    this->enemyList[i]->setDirection(Direction::Left);
+                    this->enemyList[i]->setTile("left");
+                    this->enemyList[i]->move();
+                    break;
+                case 3:
+                    this->enemyList[i]->setDirection(Direction::Right);
+                    this->enemyList[i]->setTile("right");
+                    this->enemyList[i]->move();
+                    break;
+                }
+            }
+            else if(this->enemyList[i]->getNbMove() == 1)
+            {
+                this->enemyList[i]->setNbMove(0);
+                this->enemyList[i]->move();
+            }
+        }
+    }
+}
+
+int Controller::getTimeIterator() const
+{
+    return timeIterator;
+}
+
+void Controller::setTimeIterator(int value)
+{
+    timeIterator = value;
 }
 
 void Controller::removeEnemy(int vectPos)

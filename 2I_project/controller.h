@@ -69,8 +69,12 @@ public:
     void setHomeworkList(const QVector<Homework *> &value);
     void removeHomework(int vectPos);
 
+    int getTimeIterator() const;
+    void setTimeIterator(int value);
+
 public slots:
     void updateGame();
+    void moveEnemies();
 
 private:
     Model *model;
@@ -81,6 +85,7 @@ private:
     QVector<Ammo *> ammoList;
     QVector<Coffee *> coffeeList;
     QVector<Homework *> homeworkList;
+    int timeIterator;
 
     QMediaPlayer whistleSound;
     QMediaPlayer screamSound;
