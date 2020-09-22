@@ -251,6 +251,8 @@ void Controller::playerAttack()
 }
 
 
+
+
 bool Controller::checkCollisionPlayerEnemy()
 {
     if(this->getEnemyList().size() > 0)
@@ -278,6 +280,32 @@ bool Controller::checkCollisionPlayerEnemy()
                 return true;
             }
         }
+    }
+
+    return false;
+}
+
+bool Controller::checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction)
+{
+    if(direction == Direction::Up && this->getModel()->getPlayer()->getYTile() + 1 == yTile && this->getModel()->getPlayer()->getXTile() == xTile)
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        return true;
+    }
+    else if(direction == Direction::Down && this->getModel()->getPlayer()->getYTile() - 1 == yTile && this->getModel()->getPlayer()->getXTile() == xTile)
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        return true;
+    }
+    else if(direction == Direction::Left && this->getModel()->getPlayer()->getXTile() + 1 == xTile && this->getModel()->getPlayer()->getYTile() == yTile)
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        return true;
+    }
+    else if(direction == Direction::Right && this->getModel()->getPlayer()->getXTile() - 1 == xTile && this->getModel()->getPlayer()->getYTile() == yTile)
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        return true;
     }
 
     return false;
@@ -468,29 +496,33 @@ void Controller::moveEnemies()
                 case 0:
                     this->enemyList[i]->setDirection(Direction::Up);
                     this->enemyList[i]->setTile("up");
-                    this->enemyList[i]->move();
                     break;
                 case 1:
                     this->enemyList[i]->setDirection(Direction::Down);
                     this->enemyList[i]->setTile("down");
-                    this->enemyList[i]->move();
                     break;
                 case 2:
                     this->enemyList[i]->setDirection(Direction::Left);
                     this->enemyList[i]->setTile("left");
-                    this->enemyList[i]->move();
                     break;
                 case 3:
                     this->enemyList[i]->setDirection(Direction::Right);
                     this->enemyList[i]->setTile("right");
-                    this->enemyList[i]->move();
                     break;
                 }
             }
             else if(this->enemyList[i]->getNbMove() == 1)
             {
                 this->enemyList[i]->setNbMove(0);
+            }
+
+            if(getFutureTile(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyPlayer(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()))
+            {
                 this->enemyList[i]->move();
+            }
+            else
+            {
+                this->enemyList[i]->setNbMove(0);
             }
         }
     }

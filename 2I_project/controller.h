@@ -38,6 +38,7 @@ public:
 
     void playerAttack();
     bool checkCollisionPlayerEnemy();
+    bool checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction);
     void checkCollisionPlayerAmmo();
     void checkCollisionPlayerCoffee();
 
