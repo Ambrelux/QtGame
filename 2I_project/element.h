@@ -15,9 +15,9 @@ class Element: public QObject{
     Q_OBJECT
 public:
     Element();
+
     QPixmap getTile();
     void setTile(QString _tile);
-
 
     int getXCoord() const;
     void setXCoord(int value);
@@ -31,9 +31,9 @@ public:
     int getYTile() const;
     void setYTile(int value);
 
-
     QString getTilePath() const;
     void setTilePath(const QString &value);
+
     Direction getDirection() const;
     void setDirection(const Direction &value);
 

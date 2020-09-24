@@ -1,6 +1,5 @@
 #include "enemy.h"
 
-
 Enemy::Enemy(int _xTile, int _yTile, int _healthPoint, QString studentType)
 {
     this->setXCoord(_xTile*32);

@@ -28,14 +28,15 @@ class Controller : public QWidget
     Q_OBJECT
 public:
     Controller(class MainWindow *view, class Model *model, class Menu *menu, class Rules *rules);
-    int state = 0;
+
     void startGame();
-    void keyPressed(QString key);
 
     void mapInitialization();
-    bool getFutureTile(int xTile, int yTile, Direction direction);
+
+    bool checkTile(int xTile, int yTile, Direction direction);
 
     void playerAttack();
+
     bool checkCollisionPlayerEnemy();
     bool checkCollisionPlayerBoss();
     bool checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction);
@@ -44,22 +45,22 @@ public:
     void checkCollisionPlayerAmmo();
     void checkCollisionPlayerCoffee();
     void checkCollisionPlayerHomework();
+    void checkCollisionProjectile();
 
     void createProjectile(int xTile, int yTile, Direction direction);
+    void moveProjectiles();
+    void randomLootOnEnemy(int xTile, int yTile);
+    bool checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance);
+    void moveEnemies();
+
+    // GETTERS SETTERS REMOVERS
 
     QVector<Projectile *> getProjectileList() const;
     void setProjectileList(const QVector<Projectile *> &value);
-    bool checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance);
-    void moveProjectiles();
     void removeProjectile(int vectPos);
-
-    void checkCollisionProjectile();
-
-    void randomLootOnEnemy(int xTile, int yTile);
 
     QVector<Enemy *> getEnemyList() const;
     void setEnemyList(const QVector<Enemy *> &value);
-    void moveEnemies();
     void removeEnemy(int vectPos);
 
     QVector<Ammo *> getAmmoList() const;
@@ -86,6 +87,9 @@ public:
     void resetList();
     void showRules();
     void showMenu();
+    void keyPressed(QString key);
+
+    int state;
 
 public slots:
     void updateGame();
@@ -95,20 +99,21 @@ private:
     MainWindow *view;
     Menu *menu;
     Rules *rules;
-    QTimer *timer;
+
     QVector<Projectile *> projectileList;
     QVector<Enemy *> enemyList;
     QVector<Ammo *> ammoList;
     QVector<Coffee *> coffeeList;
     QVector<Homework *> homeworkList;
-    int timeIterator;
+
 
     QMediaPlayer whistleSound;
     QMediaPlayer screamSound;
     QMediaPlayer drinkSound;
     QMediaPlayer bgMusic;
 
-
+    QTimer *timer;
+    int timeIterator;
 };
 
 #endif // CONTROLLER_H

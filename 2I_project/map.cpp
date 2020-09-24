@@ -35,22 +35,3 @@ void Map::setMapMatrix(const QVector<QString> &value)
 {
     mapMatrix = value;
 }
-
-//void Map::mapInitialization()
-//{
-//    QFile file(this->getFileName());
-//    file.open(QIODevice::ReadOnly | QIODevice::Text);
-//    QTextStream stream(&file);
-
-//    QString line;
-//    QVector<QString> _mapMatrix;
-//    _mapMatrix.clear();
-
-//    while(! stream.atEnd())
-//    {
-//        line = stream.readLine();
-//        _mapMatrix.append(line);
-//    }
-
-//    this->setMapMatrix(_mapMatrix);
-//}

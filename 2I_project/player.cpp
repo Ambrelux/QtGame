@@ -14,7 +14,6 @@ Player::Player()
     this->setMaxHealthPoint(5);
     this->setHealthPoint(this->getMaxHealthPoint());
     this->setHomeworkQuantity(0);
-
 }
 
 unsigned int Player::getProjectileQuantity() const

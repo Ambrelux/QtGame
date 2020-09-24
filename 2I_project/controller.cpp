@@ -1,63 +1,64 @@
 #include "controller.h"
-#include <QtDebug>
-#include <QFontDatabase>
+
 Controller::Controller(MainWindow *view, Model *model, Menu *menu, Rules *rules)
 {
-    srand((unsigned) time(0));
     this->view = view;
     this->model = model;
     this->menu = menu;
     this->rules = rules;
+
+    srand((unsigned) time(0));
     this->timer =  new QTimer();
     timer->connect(timer,SIGNAL(timeout()), this, SLOT(updateGame()));
+    this->setTimeIterator(0);
+
     this->whistleSound.setMedia(QUrl("qrc:/sounds/sounds/whistle.wav"));
     this->screamSound.setMedia(QUrl("qrc:/sounds/sounds/scream.wav"));
     this->drinkSound.setMedia(QUrl("qrc:/sounds/sounds/drink.mp3"));
     this->bgMusic.setMedia(QUrl("qrc:/sounds/sounds/bgMusic.mp3"));
-    this->setTimeIterator(0);
-
 }
 
 void Controller::startGame(){
     this->bgMusic.stop();
+    this->menu->close();
+
     state = 0;
     this->view->displayEndGame("","FFFFFF");
     this->mapInitialization();
     updateGame();
-    this->menu->close();
     this->view->show();
 }
 
-
-
 void Controller::updateGame()
 {
-    this->view->resetView();
-    this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
-    this->moveProjectiles();
     this->setTimeIterator(this->getTimeIterator() + 1);
     if(this->getTimeIterator() % 10 == 0)
     {
         moveEnemies();
     }
+    this->moveProjectiles();
     this->checkCollisionProjectile();
     this->checkCollisionPlayerAmmo();
     this->checkCollisionPlayerCoffee();
     this->checkCollisionPlayerHomework();
-    this->view->displayProjectile(this->getProjectileList());
+
+    this->view->resetView();
+    this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
+    this->view->displayPlayer(this->getModel()->getPlayer());
     this->view->displayEnemy(this->getEnemyList());
+    this->view->displayProjectile(this->getProjectileList());
     this->view->displayAmmo(this->getAmmoList());
     this->view->displayCoffee(this->getCoffeeList());
     this->view->displayHomework(this->getHomeworkList());
-    this->view->displayPlayer(this->getModel()->getPlayer());
     this->view->displayUI(this->getModel()->getPlayer());
-    if(this->getModel()->getPlayer()->getHomeworkQuantity() >= 1 && this->getModel()->getBoss()->getHealthPoint() > 0)
+
+
+    if(this->getModel()->getPlayer()->getHomeworkQuantity() >= 10 && this->getModel()->getBoss()->getHealthPoint() > 0)
     {
         this->view->displayBoss(this->getModel()->getBoss());
         if(this->getTimeIterator() % 10 == 0)
         {
             this->createProjectile(this->getModel()->getBoss()->getXTile(),this->getModel()->getBoss()->getYTile(),this->getModel()->getBoss()->getDirection());
-
         }
     }
 
@@ -69,70 +70,9 @@ void Controller::updateGame()
     this->endGame();
 }
 
-void Controller::keyPressed(QString key)
-{
-
-    if(key == "up")
-    {
-        this->model->getPlayer()->setTile(key);
-        this->model->getPlayer()->setDirection(Direction::Up);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
-        {
-            this->model->getPlayer()->move();
-        }
-
-    }
-    else if(key == "down")
-    {
-        this->model->getPlayer()->setTile(key);
-        this->model->getPlayer()->setDirection(Direction::Down);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
-        {
-            this->model->getPlayer()->move();
-        }
-    }
-    else if(key == "left")
-    {
-        this->model->getPlayer()->setTile(key);
-        this->model->getPlayer()->setDirection(Direction::Left);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
-        {
-            this->model->getPlayer()->move();
-        }
-    }
-    else if(key == "right")
-    {
-        this->model->getPlayer()->setTile(key);
-        this->model->getPlayer()->setDirection(Direction::Right);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
-        {
-            this->model->getPlayer()->move();
-        }
-    }
-    else if(key == "space")
-    {
-        if(this->model->getPlayer()->getProjectileQuantity() > 0)
-        {
-            this->model->getPlayer()->setProjectileQuantity(this->model->getPlayer()->getProjectileQuantity() - 1);
-            this->createProjectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection());
-        }
-
-    }
-    else if(key == "a")
-    {
-        playerAttack();
-    }
-    else if(key == "r")
-    {
-        this->showRules();
-    }
-    else if(key == "m")
-    {
-        this->showMenu();
-    }
-
-}
-
+/*!
+    Set up map's elements (walkable tiles, enemies and items) by reading a textfile.
+*/
 void Controller::mapInitialization()
 {
     QFile file(this->getModel()->getMap()->getFileName());
@@ -173,7 +113,10 @@ void Controller::mapInitialization()
     this->setHomeworkList(vectHomework);
 }
 
-bool Controller::getFutureTile(int xTile, int yTile, Direction direction)
+/*!
+    check if the unit can move on a tile. Return true if it is possible else false.
+*/
+bool Controller::checkTile(int xTile, int yTile, Direction direction)
 {
     QString futureTile;
 
@@ -201,6 +144,9 @@ bool Controller::getFutureTile(int xTile, int yTile, Direction direction)
     return false;
 }
 
+/*!
+    function called when user press A key. If there is an enemy on the next tile he will lose health.
+*/
 void Controller::playerAttack()
 {
     whistleSound.play();
@@ -249,7 +195,6 @@ void Controller::playerAttack()
 
     }
 
-
     if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
     {
         this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint()-2);
@@ -268,9 +213,9 @@ void Controller::playerAttack()
     }
 }
 
-
-
-
+/*!
+    Returns true if the player will collide with an enemy (he also lose healthpoint), else false.
+*/
 bool Controller::checkCollisionPlayerEnemy()
 {
     if(this->getEnemyList().size() > 0)
@@ -279,22 +224,22 @@ bool Controller::checkCollisionPlayerEnemy()
         {
             if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
-                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getEnemyList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getEnemyList()[i]->getXTile())
             {
-                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
-                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
                 return true;
             }
             else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getEnemyList()[i]->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getEnemyList()[i]->getYTile())
             {
-                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+                this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
                 return true;
             }
         }
@@ -303,6 +248,9 @@ bool Controller::checkCollisionPlayerEnemy()
     return false;
 }
 
+/*!
+    Returns true if the player will collide with the boss (he also lose healthpoint), else false.
+*/
 bool Controller::checkCollisionPlayerBoss()
 {
     if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() + 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
@@ -329,6 +277,9 @@ bool Controller::checkCollisionPlayerBoss()
     return false;
 }
 
+/*!
+    Returns true if the enemy will collide with the player (player also lose healthpoint), else false.
+*/
 bool Controller::checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction)
 {
     if(direction == Direction::Up && this->getModel()->getPlayer()->getYTile() + 1 == yTile && this->getModel()->getPlayer()->getXTile() == xTile)
@@ -355,6 +306,9 @@ bool Controller::checkCollisionEnemyPlayer(int xTile, int yTile, Direction direc
     return false;
 }
 
+/*!
+    Returns true if the enemy will collide with another enemy, else false.
+*/
 bool Controller::checkCollisionEnemyEnemy(int xTile, int yTile, Direction direction)
 {
     if(this->getEnemyList().size() > 0)
@@ -385,6 +339,9 @@ bool Controller::checkCollisionEnemyEnemy(int xTile, int yTile, Direction direct
     return false;
 }
 
+/*!
+    Returns true if the enemy will collide with the boss, else false.
+*/
 bool Controller::checkCollisionEnemyBoss(int xTile, int yTile, Direction direction)
 {
     if(direction == Direction::Up && this->getModel()->getBoss()->getYTile() + 1 == yTile && this->getModel()->getBoss()->getXTile() == xTile)
@@ -407,6 +364,9 @@ bool Controller::checkCollisionEnemyBoss(int xTile, int yTile, Direction directi
     return false;
 }
 
+/*!
+    Check if the player is on the same tile as an ammo, if it is the ammo is removed and projectile quantity is increased.
+*/
 void Controller::checkCollisionPlayerAmmo()
 {
     if(this->getAmmoList().size() > 0)
@@ -422,6 +382,9 @@ void Controller::checkCollisionPlayerAmmo()
     }
 }
 
+/*!
+    Check if the player is on the same tile as a coffee, if it is and player health is not full, the coffee is removed and health point is increased.
+*/
 void Controller::checkCollisionPlayerCoffee()
 {
     if(this->getCoffeeList().size() > 0)
@@ -438,6 +401,9 @@ void Controller::checkCollisionPlayerCoffee()
     }
 }
 
+/*!
+    Check if the player is on the same tile as a homework, if it is the homework is removed and homework count is increased.
+*/
 void Controller::checkCollisionPlayerHomework()
 {
     if(this->getHomeworkList().size() > 0)
@@ -453,52 +419,9 @@ void Controller::checkCollisionPlayerHomework()
     }
 }
 
-void Controller::createProjectile(int xTile, int yTile, Direction direction)
-{
-    QVector<Projectile *> vect = this->getProjectileList();
-    vect.push_back(new Projectile(xTile,yTile,direction));
-    this->setProjectileList(vect);
-}
-
-void Controller::moveProjectiles()
-{
-    if(this->getProjectileList().size() > 0)
-    {
-        for(int i = 0 ; i < this->getProjectileList().size() ; i++)
-        {
-            if(getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) && checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
-            {
-                if(this->getProjectileList()[i]->getDirection() == Direction::Up)
-                {
-                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() - 1);
-                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() - 32);
-                }
-                else if (this->getProjectileList()[i]->getDirection() == Direction::Down)
-                {
-                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() + 1);
-                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() + 32);
-                }
-                else if (this->getProjectileList()[i]->getDirection() == Direction::Left)
-                {
-                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() - 1);
-                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() - 32);
-                }
-                else if (this->getProjectileList()[i]->getDirection() == Direction::Right)
-                {
-                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() + 1);
-                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() + 32);
-                }
-            }
-            else if (!getFutureTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) || !checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
-            {
-                removeProjectile(i);
-            }
-        }
-    }
-}
-
-
-
+/*!
+    Check if a projectile collides with a unit. If it is the unit takes damages and the projectile is removed.
+*/
 void Controller::checkCollisionProjectile()
 {
     // check collisions projectiles enemies
@@ -512,7 +435,7 @@ void Controller::checkCollisionProjectile()
                 {
                     if(this->getProjectileList()[i]->getXTile() == this->getEnemyList()[j]->getXTile() && this->getProjectileList()[i]->getYTile() == this->getEnemyList()[j]->getYTile())
                     {
-                        screamSound.play();
+                        this->screamSound.play();
                         this->randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
                         this->removeProjectile(i);
                         this->removeEnemy(j);
@@ -547,6 +470,61 @@ void Controller::checkCollisionProjectile()
     }
 }
 
+/*!
+    Function called when player press space bar or when the boss spawn. It creates a new projectile.
+*/
+void Controller::createProjectile(int xTile, int yTile, Direction direction)
+{
+    QVector<Projectile *> vect = this->getProjectileList();
+    vect.push_back(new Projectile(xTile,yTile,direction));
+    this->setProjectileList(vect);
+}
+
+/*!
+    Move each projectile if it is possible. (check max distance and walkable tile)
+*/
+void Controller::moveProjectiles()
+{
+    if(this->getProjectileList().size() > 0)
+    {
+        for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+        {
+            if(checkTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) && checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
+            {
+                if(this->getProjectileList()[i]->getDirection() == Direction::Up)
+                {
+                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() - 1);
+                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() - 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Down)
+                {
+                    this->getProjectileList()[i]->setYTile(this->getProjectileList()[i]->getYTile() + 1);
+                    this->getProjectileList()[i]->setYCoord(this->getProjectileList()[i]->getYCoord() + 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Left)
+                {
+                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() - 1);
+                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() - 32);
+                }
+                else if (this->getProjectileList()[i]->getDirection() == Direction::Right)
+                {
+                    this->getProjectileList()[i]->setXTile(this->getProjectileList()[i]->getXTile() + 1);
+                    this->getProjectileList()[i]->setXCoord(this->getProjectileList()[i]->getXCoord() + 32);
+                }
+            }
+            else if (!checkTile(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getDirection()) || !checkMaxDistance(this->getProjectileList()[i]->getXTile(),this->getProjectileList()[i]->getYTile(),this->getProjectileList()[i]->getInitialXTile(),this->getProjectileList()[i]->getInitialYTile(),this->getProjectileList()[i]->getMaxDistance()))
+            {
+                removeProjectile(i);
+            }
+        }
+    }
+}
+
+
+
+/*!
+    Function called when enemies died. There is 20% chance to loot ammo or homework and 30% chance to loot coffee.
+*/
 void Controller::randomLootOnEnemy(int xTile, int yTile)
 {
     int randomNumber = rand()%10;
@@ -570,6 +548,9 @@ void Controller::randomLootOnEnemy(int xTile, int yTile)
     }
 }
 
+/*!
+    Function called to move projectile. Returns true if it travelled more than max distance, else false.
+*/
 bool Controller::checkMaxDistance(int xTile, int yTile, int xInitialTile, int yInitialTile, int maxDistance)
 {
     int diffX = xTile - xInitialTile;
@@ -579,23 +560,13 @@ bool Controller::checkMaxDistance(int xTile, int yTile, int xInitialTile, int yI
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
-
-QVector<Enemy *> Controller::getEnemyList() const
-{
-    return enemyList;
-}
-
-void Controller::setEnemyList(const QVector<Enemy *> &value)
-{
-    enemyList = value;
-}
-
+/*!
+    Function called to move enemies randomly.
+*/
 void Controller::moveEnemies()
 {
     if(this->enemyList.size() > 0 )
@@ -630,7 +601,7 @@ void Controller::moveEnemies()
                 this->enemyList[i]->setNbMove(0);
             }
 
-            if(getFutureTile(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyPlayer(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyEnemy(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()))
+            if(checkTile(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyPlayer(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyEnemy(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()))
             {
                 this->enemyList[i]->move();
             }
@@ -642,6 +613,26 @@ void Controller::moveEnemies()
     }
 }
 
+/*
+    GETTERS, SETTERS AND DELETERS.
+*/
+
+QVector<Enemy *> Controller::getEnemyList() const
+{
+    return enemyList;
+}
+
+void Controller::setEnemyList(const QVector<Enemy *> &value)
+{
+    enemyList = value;
+}
+
+void Controller::removeEnemy(int vectPos)
+{
+    delete this->enemyList[vectPos];
+    this->enemyList.erase(this->enemyList.begin() + vectPos);
+}
+
 int Controller::getTimeIterator() const
 {
     return timeIterator;
@@ -650,12 +641,6 @@ int Controller::getTimeIterator() const
 void Controller::setTimeIterator(int value)
 {
     timeIterator = value;
-}
-
-void Controller::removeEnemy(int vectPos)
-{
-    delete this->enemyList[vectPos];
-    this->enemyList.erase(this->enemyList.begin() + vectPos);
 }
 
 QVector<Projectile *> Controller::getProjectileList() const
@@ -682,60 +667,6 @@ void Controller::setModel(Model *value)
 Model *Controller::getModel() const
 {
     return model;
-}
-
-
-void Controller::endGame()
-{
-    if(state == 1){
-        this->showMenu();
-    }
-
-    if(this->getModel()->getPlayer()->getHealthPoint()<0.5)
-    {
-        this->view->displayEndGame("Defeat","FF0000");
-        state=1;
-    }
-    else if(this->getModel()->getBoss()->getHealthPoint() < 0.5)
-    {
-        this->view->displayEndGame("Victory","FFD700");
-        state = 1;
-    }
-
-
-}
-
-void Controller::delay(int i)
-{
-    QTime dieTime= QTime::currentTime().addSecs(i);
-    while (QTime::currentTime() < dieTime)
-    {
-
-    }
-}
-
-void Controller::resetList()
-{
-    for(int i = 0 ; i < this->getEnemyList().size() ; i++)
-    {
-        this->removeEnemy(i);
-    }
-    for(int i = 0 ; i < this->getProjectileList().size() ; i++)
-    {
-        this->removeProjectile(i);
-    }
-    for(int i = 0 ; i < this->getCoffeeList().size() ; i++)
-    {
-        this->removeCoffee(i);
-    }
-    for(int i = 0 ; i < this->getHomeworkList().size() ; i++)
-    {
-        this->removeHomework(i);
-    }
-    for(int i = 0 ; i < this->getAmmoList().size() ; i++)
-    {
-        this->removeAmmo(i);
-    }
 }
 
 QVector<Coffee *> Controller::getCoffeeList() const
@@ -786,11 +717,76 @@ void Controller::removeHomework(int vectPos)
     this->homeworkList.erase(this->homeworkList.begin() + vectPos);
 }
 
+/*!
+    Function called to show end screen for defeat or victory.
+*/
+void Controller::endGame()
+{
+    if(state == 1){
+        this->showMenu();
+    }
+
+    if(this->getModel()->getPlayer()->getHealthPoint()<0.5)
+    {
+        this->view->displayEndGame("Defeat","FF0000");
+        state=1;
+    }
+    else if(this->getModel()->getBoss()->getHealthPoint() < 0.5)
+    {
+        this->view->displayEndGame("Victory","FFD700");
+        state = 1;
+    }
+}
+
+/*!
+    Function to stop the program for i seconds
+*/
+void Controller::delay(int i)
+{
+    QTime dieTime= QTime::currentTime().addSecs(i);
+    while (QTime::currentTime() < dieTime)
+    {
+    }
+}
+
+/*!
+    Function called when the game ended, it clears each list. (ammo, coffee, homework, projectile, enemy)
+*/
+void Controller::resetList()
+{
+    for(int i = 0 ; i < this->getEnemyList().size() ; i++)
+    {
+        this->removeEnemy(i);
+    }
+    for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+    {
+        this->removeProjectile(i);
+    }
+    for(int i = 0 ; i < this->getCoffeeList().size() ; i++)
+    {
+        this->removeCoffee(i);
+    }
+    for(int i = 0 ; i < this->getHomeworkList().size() ; i++)
+    {
+        this->removeHomework(i);
+    }
+    for(int i = 0 ; i < this->getAmmoList().size() ; i++)
+    {
+        this->removeAmmo(i);
+    }
+}
+
+/*!
+    Show rules' window.
+*/
 void Controller::showRules()
 {
     this->rules->show();
 }
 
+/*!
+    Show menu's window.
+*/
 void Controller::showMenu()
 {
     if(state==1){
@@ -802,4 +798,68 @@ void Controller::showMenu()
     this->view->close();
     this->menu->show();
     this->bgMusic.play();
+}
+
+/*!
+    Function called when user press key.
+*/
+void Controller::keyPressed(QString key)
+{
+    if(key == "up")
+    {
+        this->getModel()->getPlayer()->setTile(key);
+        this->getModel()->getPlayer()->setDirection(Direction::Up);
+        if(checkTile(this->getModel()->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->getModel()->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
+        {
+            this->getModel()->getPlayer()->move();
+        }
+
+    }
+    else if(key == "down")
+    {
+        this->getModel()->getPlayer()->setTile(key);
+        this->getModel()->getPlayer()->setDirection(Direction::Down);
+        if(checkTile(this->getModel()->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->getModel()->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
+        {
+            this->getModel()->getPlayer()->move();
+        }
+    }
+    else if(key == "left")
+    {
+        this->getModel()->getPlayer()->setTile(key);
+        this->getModel()->getPlayer()->setDirection(Direction::Left);
+        if(checkTile(this->getModel()->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->getModel()->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
+        {
+            this->getModel()->getPlayer()->move();
+        }
+    }
+    else if(key == "right")
+    {
+        this->getModel()->getPlayer()->setTile(key);
+        this->getModel()->getPlayer()->setDirection(Direction::Right);
+        if(checkTile(this->getModel()->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->getModel()->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
+        {
+            this->getModel()->getPlayer()->move();
+        }
+    }
+    else if(key == "space")
+    {
+        if(this->getModel()->getPlayer()->getProjectileQuantity() > 0)
+        {
+            this->getModel()->getPlayer()->setProjectileQuantity(this->getModel()->getPlayer()->getProjectileQuantity() - 1);
+            this->createProjectile(this->getModel()->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->getModel()->getPlayer()->getDirection());
+        }
+    }
+    else if(key == "a")
+    {
+        playerAttack();
+    }
+    else if(key == "r")
+    {
+        this->showRules();
+    }
+    else if(key == "m")
+    {
+        this->showMenu();
+    }
 }

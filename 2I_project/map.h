@@ -20,8 +20,6 @@ public:
     QVector<QString> getMapMatrix() const;
     void setMapMatrix(const QVector<QString> &value);
 
-//    void mapInitialization();
-
 private:
     QString fileName=":/maps/maps/map_matrix.txt";
     QString mapImagePath=":/images/images/map.png";

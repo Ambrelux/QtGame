@@ -4,20 +4,14 @@ Projectile::Projectile(int _xTile, int _yTile, Direction _direction)
 {
     this->setXTile(_xTile);
     this->setYTile(_yTile);
-
     this->setInitialXTile(_xTile);
     this->setInitialYTile(_yTile);
-
     this->setXCoord(_xTile*32);
     this->setYCoord(_yTile*32);
-
     this->setTilePath(":/images/images/item/");
     this->setTile("projectile");
-
     this->setDirection(_direction);
-
     this->setMaxDistance(3);
-
 }
 
 int Projectile::getInitialXTile() const

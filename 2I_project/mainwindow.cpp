@@ -5,22 +5,18 @@
 #include <QFontDatabase>
 extern Controller *pointerCtrl;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    QFont buttonFont = this->getGameFont(15);
     ui->setupUi(this);
-    //this->setStyleSheet("background-color: #FFDAB9;");
-    setWindowIcon(QIcon(":/images/images/icon.ico"));
-    this->scene = new QGraphicsScene();
-    this->scene->setFocus();
     ui->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->view->setFixedSize(960,490);
-
-    QFont buttonFont = this->getGameFont(15);
     ui->menuButton->setFont(buttonFont);
     ui->rulesButton->setFont(buttonFont);
+    setWindowIcon(QIcon(":/images/images/icon.ico"));
+    this->scene = new QGraphicsScene();
+    this->scene->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -55,7 +51,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         case Qt::Key_M:
             pointerCtrl->keyPressed("m");
         break;
-
     }
 }
 
@@ -156,7 +151,6 @@ void MainWindow::displayEndGame(QString text, QString color)
 
 void MainWindow::displayUI(Player *player)
 {
-
     QFont uiFont = this->getGameFont(20);
     ui->coffeeLabel->setText(QString::number(player->getHealthPoint()) + "/5");
     ui->ammoLabel->setText(QString::number(player->getProjectileQuantity()));

@@ -29,11 +29,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    //variables
+
+    //variable
     QGraphicsScene * scene;
 
     //function
     void keyPressEvent(QKeyEvent *event);
+
     void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
     void displayEnemy(QVector<Enemy *>enemyList);
@@ -44,17 +46,17 @@ public:
     void displayHomework(QVector<Homework *>homeworkList);
     void displayEndGame(QString text, QString color);
     void displayUI(Player * player);
+
     QFont getGameFont(int size);
+
     void resetView();
 
 private slots:
     void on_menuButton_clicked();
-
     void on_rulesButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    QLabel *label;
 };
 
 #endif // MAINWINDOW_H

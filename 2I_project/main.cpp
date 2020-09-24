@@ -4,6 +4,7 @@
 #include "controller.h"
 #include "menu.h"
 #include "rules.h"
+
 Controller *pointerCtrl;
 
 int main(int argc, char *argv[])

@@ -3,7 +3,6 @@
 #include <QDebug>
 Element::Element(): QObject(){
 
-
 }
 
 QPixmap Element::getTile()

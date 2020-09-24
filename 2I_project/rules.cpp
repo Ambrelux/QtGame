@@ -12,7 +12,6 @@ Rules::Rules(QWidget *parent) :
     QPalette palette;
     palette.setBrush(QPalette::Background, bkgnd);
     this->setPalette(palette);
-
 }
 
 Rules::~Rules()
