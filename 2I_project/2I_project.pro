@@ -17,34 +17,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ammo.cpp \
+    boss.cpp \
     coffee.cpp \
     controller.cpp \
     element.cpp \
     enemy.cpp \
     homework.cpp \
     main.cpp \
+    mainwindow.cpp \
     map.cpp \
+    menu.cpp \
     model.cpp \
     player.cpp \
     projectile.cpp \
     resource.cpp \
-    unit.cpp \
-    view.cpp
+    rules.cpp \
+    unit.cpp
 
 HEADERS += \
     ammo.h \
+    boss.h \
     coffee.h \
     controller.h \
     element.h \
     enemy.h \
     homework.h \
+    mainwindow.h \
     map.h \
+    menu.h \
     model.h \
     player.h \
     projectile.h \
     resource.h \
-    unit.h \
-    view.h
+    rules.h \
+    unit.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -55,4 +61,11 @@ RESOURCES += \
     res.qrc
 
 DISTFILES += \
-    ../../map/maps/map_test.png
+    ../../map/maps/map_test.png \
+    fonts/Chicken Quiche.ttf \
+    fonts/Chicken Quiche.ttf
+
+FORMS += \
+    mainwindow.ui \
+    menu.ui \
+    rules.ui

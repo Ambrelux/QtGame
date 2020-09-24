@@ -1,5 +1,5 @@
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QObject>
@@ -10,19 +10,25 @@
 #include <QImage>
 #include <QKeyEvent>
 #include <QVector>
+#include <QLabel>
 #include "controller.h"
 #include "enemy.h"
 #include "ammo.h"
 #include "projectile.h"
 #include "coffee.h"
 #include "homework.h"
-class View : public QGraphicsView
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
-public:
-    View(QWidget *parent = 0);
-    //~View();
 
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
     //variables
     QGraphicsScene * scene;
 
@@ -31,14 +37,17 @@ public:
     void displayMap(Player *player, Map *map);
     void displayPlayer(Player *player);
     void displayEnemy(QVector<Enemy *>enemyList);
+    void displayBoss(Boss *boss);
     void displayProjectile(QVector<Projectile *>projectileList);
     void displayAmmo(QVector<Ammo *>ammoList);
     void displayCoffee(QVector<Coffee *>coffeeList);
     void displayHomework(QVector<Homework *>homeworkList);
-
+    void displayWin(QString text, QString color);
     void resetView();
-private:
 
+private:
+    Ui::MainWindow *ui;
+    QLabel *label;
 };
 
-#endif // VIEW_H
+#endif // MAINWINDOW_H

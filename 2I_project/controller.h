@@ -13,24 +13,25 @@
 #include <iostream>
 
 #include "model.h"
-#include "view.h"
+#include "mainwindow.h"
+#include "menu.h"
 #include "enemy.h"
 #include "projectile.h"
 #include "coffee.h"
 #include "ammo.h"
 #include "homework.h"
-
+#include "rules.h"
 using namespace std;
 
 class Controller : public QWidget
 {
     Q_OBJECT
 public:
-    Controller(class View *view, class Model *model);
+    Controller(class MainWindow *view, class Model *model, class Menu *menu, class Rules *rules);
 
     void startGame();
-    void setModel(Model *value);
-    Model *getModel() const;
+    void showRules();
+
     void keyPressed(QString key);
 
     void mapInitialization();
@@ -51,7 +52,7 @@ public:
     void moveProjectiles();
     void removeProjectile(int vectPos);
 
-    void checkCollisionProjectileEnemy();
+    void checkCollisionProjectile();
 
     void randomLootOnEnemy(int xTile, int yTile);
 
@@ -74,13 +75,23 @@ public:
     int getTimeIterator() const;
     void setTimeIterator(int value);
 
+    void setModel(Model *value);
+    Model *getModel() const;
+
+    void checkWin();
+    void checkLose();
+    void delay(int i);
+    void resetList();
+
 public slots:
     void updateGame();
     void moveEnemies();
 
 private:
     Model *model;
-    View *view;
+    MainWindow *view;
+    Menu *menu;
+    Rules *rules;
     QTimer *timer;
     QVector<Projectile *> projectileList;
     QVector<Enemy *> enemyList;

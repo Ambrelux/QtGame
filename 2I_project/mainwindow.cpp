@@ -1,56 +1,75 @@
-#include "view.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include <QPointer>
 #include <QtDebug>
+#include <QFontDatabase>
 extern Controller *pointerCtrl;
 
-View::View(QWidget *parent)
-{  
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
     this->scene = new QGraphicsScene();
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setFixedSize(800,600);
+    this->scene->setFocus();
+    ui->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->view->setFixedSize(960,490);
 }
 
-void View::keyPressEvent(QKeyEvent *event)
+MainWindow::~MainWindow()
 {
+    delete ui;
+}
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug() << "prout";
     switch(event->key()){
-        case Qt::Key_Left:
+        case Qt::Key_Q:
             pointerCtrl->keyPressed("left");
-            break;
-        case Qt::Key_Right:
+        break;
+        case Qt::Key_D:
             pointerCtrl->keyPressed("right");
-            break;
-        case Qt::Key_Up:
+        break;
+        case Qt::Key_Z:
             pointerCtrl->keyPressed("up");
-            break;
-        case Qt::Key_Down:
+        break;
+        case Qt::Key_S:
             pointerCtrl->keyPressed("down");
-            break;
+        break;
         case Qt::Key_Space:
             pointerCtrl->keyPressed("space");
-            break;
+        break;
         case Qt::Key_A:
             pointerCtrl->keyPressed("a");
-            break;
+        break;
+        case Qt::Key_R:
+            pointerCtrl->keyPressed("r");
+        break;
+        case Qt::Key_M:
+            pointerCtrl->keyPressed("m");
+        break;
+
     }
 }
 
-void View::displayMap(Player *player, Map *map)
+
+void MainWindow::displayMap(Player *player, Map *map)
 {
-    this->scene->setSceneRect(player->getXCoord()-400,player->getYCoord()-300,800,600);
+    this->scene->setSceneRect(player->getXCoord()-480,player->getYCoord()-245,960,490);
     this->scene->setBackgroundBrush(QBrush(QImage(map->getMapImagePath())));
-    this->setScene(scene);
+    ui->view->setScene(scene);
 }
 
-void View::displayPlayer(Player *player)
+void MainWindow::displayPlayer(Player *player)
 {
     QGraphicsPixmapItem *pixmapPlayer = new QGraphicsPixmapItem(player->getTile());
     pixmapPlayer->setPos(player->getXCoord(),player->getYCoord());
     this->scene->addItem(pixmapPlayer);
 }
 
-void View::displayEnemy(QVector<Enemy *> enemyList)
+void MainWindow::displayEnemy(QVector<Enemy *> enemyList)
 {
     if(enemyList.size() > 0)
     {
@@ -63,8 +82,15 @@ void View::displayEnemy(QVector<Enemy *> enemyList)
     }
 }
 
-void View::displayProjectile(QVector<Projectile *>projectileList)
-{       
+void MainWindow::displayBoss(Boss *boss)
+{
+    QGraphicsPixmapItem *pixmapBoss = new QGraphicsPixmapItem(boss->getTile());
+    pixmapBoss->setPos(boss->getXCoord(),boss->getYCoord());
+    this->scene->addItem(pixmapBoss);
+}
+
+void MainWindow::displayProjectile(QVector<Projectile *>projectileList)
+{
     if(projectileList.size() > 0)
     {
         for(int i = 0 ; i < projectileList.size() ; i++)
@@ -73,10 +99,10 @@ void View::displayProjectile(QVector<Projectile *>projectileList)
             pixmapProjectile->setPos(projectileList[i]->getXCoord(),projectileList[i]->getYCoord());
             this->scene->addItem(pixmapProjectile);
         }
-    }    
+    }
 }
 
-void View::displayAmmo(QVector<Ammo *> ammoList)
+void MainWindow::displayAmmo(QVector<Ammo *> ammoList)
 {
     if(ammoList.size() > 0)
     {
@@ -89,7 +115,7 @@ void View::displayAmmo(QVector<Ammo *> ammoList)
     }
 }
 
-void View::displayCoffee(QVector<Coffee *> coffeeList)
+void MainWindow::displayCoffee(QVector<Coffee *> coffeeList)
 {
     if(coffeeList.size() > 0)
     {
@@ -102,7 +128,7 @@ void View::displayCoffee(QVector<Coffee *> coffeeList)
     }
 }
 
-void View::displayHomework(QVector<Homework *> homeworkList)
+void MainWindow::displayHomework(QVector<Homework *> homeworkList)
 {
     if(homeworkList.size() > 0)
     {
@@ -115,11 +141,24 @@ void View::displayHomework(QVector<Homework *> homeworkList)
     }
 }
 
-void View::resetView()
+void MainWindow::displayWin(QString text, QString color)
+{
+    this->label = new QLabel(this);
+    int id = QFontDatabase::addApplicationFont(":/fonts/fonts/title.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont titleFont(family);
+    titleFont.setPointSize(100);
+    this->label = new QLabel(this);
+    this->label->setText(text);
+    this->label->setFont(titleFont);
+    this->label->adjustSize();
+    this->label->setGeometry(0,0,960,540);
+    this->label->setAlignment(Qt::AlignCenter);
+    this->label->setStyleSheet("QLabel {color :" + color +"; }");
+}
+
+void MainWindow::resetView()
 {
     delete this->scene;
     this->scene = new QGraphicsScene();
 }
-
-
-

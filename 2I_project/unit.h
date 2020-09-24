@@ -13,12 +13,9 @@ public:
     float getHealthPoint() const;
     void setHealthPoint(float value);
 
-    float getMaxHealthPoint() const;
-    void setMaxHealthPoint(float value);
-
 private:
     float healthPoint;
-    float maxHealthPoint;
+
 };
 
 #endif // UNIT_H

@@ -37,3 +37,13 @@ void Player::setHomeworkQuantity(unsigned int value)
     homeworkQuantity = value;
 }
 
+float Player::getMaxHealthPoint() const
+{
+    return maxHealthPoint;
+}
+
+void Player::setMaxHealthPoint(float value)
+{
+    maxHealthPoint = value;
+}
+

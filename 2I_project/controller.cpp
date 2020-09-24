@@ -1,22 +1,28 @@
 #include "controller.h"
 #include <QtDebug>
-Controller::Controller(View *view, Model *model)
+#include <QFontDatabase>
+Controller::Controller(MainWindow *view, Model *model, Menu *menu, Rules *rules)
 {
     srand((unsigned) time(0));
     this->view = view;
     this->model = model;
+    this->menu = menu;
+    this->rules = rules;
     this->timer =  new QTimer();
     timer->connect(timer,SIGNAL(timeout()), this, SLOT(updateGame()));
     this->whistleSound.setMedia(QUrl("qrc:/sounds/sounds/whistle.wav"));
     this->screamSound.setMedia(QUrl("qrc:/sounds/sounds/scream.wav"));
     this->setTimeIterator(0);
+
 }
 
 void Controller::startGame(){
     this->mapInitialization();
     updateGame();
     this->view->show();
+    this->menu->close();
 }
+
 
 
 void Controller::updateGame()
@@ -30,7 +36,7 @@ void Controller::updateGame()
         moveEnemies();
         this->setTimeIterator(0);
     }
-    this->checkCollisionProjectileEnemy();
+    this->checkCollisionProjectile();
     this->checkCollisionPlayerAmmo();
     this->checkCollisionPlayerCoffee();
     this->checkCollisionPlayerHomework();
@@ -40,7 +46,13 @@ void Controller::updateGame()
     this->view->displayCoffee(this->getCoffeeList());
     this->view->displayHomework(this->getHomeworkList());
     this->view->displayPlayer(this->getModel()->getPlayer());
-
+    if(this->getModel()->getPlayer()->getHomeworkQuantity() >= 1)
+    {
+        this->view->displayBoss(this->getModel()->getBoss());
+    }
+    this->checkWin();
+    this->checkLose();
+    this->view->displayWin("Victory","FFD700");
     timer->start(10);
 }
 
@@ -98,6 +110,19 @@ void Controller::keyPressed(QString key)
         whistleSound.play();
         playerAttack();
         this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()- 0.5);
+    }
+    else if(key == "r")
+    {
+        this->showRules();
+    }
+    else if(key == "m")
+    {
+        this->timer->stop();
+        this->getModel()->resetModel();
+        this->resetList();
+        this->view->resetView();
+        this->view->close();
+        this->menu->show();
     }
 
 }
@@ -215,6 +240,24 @@ void Controller::playerAttack()
 
         }
 
+    }
+
+
+    if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() - 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
+    {
+        this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint()-2);
+    }
+    else if(this->getModel()->getPlayer()->getDirection() == Direction::Down && this->getModel()->getPlayer()->getYTile() + 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
+    {
+        this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint()-2);
+    }
+    else if(this->getModel()->getPlayer()->getDirection() == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getModel()->getBoss()->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getBoss()->getYTile())
+    {
+        this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint()-2);
+    }
+    else if(this->getModel()->getPlayer()->getDirection() == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getModel()->getBoss()->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getBoss()->getYTile())
+    {
+        this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint()-2);
     }
 }
 
@@ -391,7 +434,7 @@ void Controller::moveProjectiles()
 
 
 
-void Controller::checkCollisionProjectileEnemy()
+void Controller::checkCollisionProjectile()
 {
     if(this->getProjectileList().size() > 0)
     {
@@ -404,16 +447,27 @@ void Controller::checkCollisionProjectileEnemy()
                     if(this->getProjectileList()[i]->getXTile() == this->getEnemyList()[j]->getXTile() && this->getProjectileList()[i]->getYTile() == this->getEnemyList()[j]->getYTile())
                     {
                         screamSound.play();
-                        randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
-                        removeProjectile(i);
-                        removeEnemy(j);
+                        this->randomLootOnEnemy(this->getEnemyList()[j]->getXTile(),this->getEnemyList()[j]->getYTile());
+                        this->removeProjectile(i);
+                        this->removeEnemy(j);
                         break;
                     }
                 }
             }
 
+            if(this->getProjectileList()[i]->getXTile() == this->getModel()->getBoss()->getXTile() && this->getProjectileList()[i]->getYTile() == this->getModel()->getBoss()->getYTile())
+            {
+                this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint() - 5);
+                this->removeProjectile(i);
+                break;
+            }
+            else if(this->getProjectileList()[i]->getXTile() == this->getModel()->getPlayer()->getXTile() && this->getProjectileList()[i]->getYTile() == this->getModel()->getPlayer()->getYTile())
+            {
+                this->getModel()->getPlayer()->setHealthPoint(0);
+                this->removeProjectile(i);
+                break;
+            }
         }
-
     }
 }
 
@@ -554,6 +608,67 @@ Model *Controller::getModel() const
     return model;
 }
 
+void Controller::checkWin()
+{
+    if(this->getModel()->getPlayer()->getHealthPoint() > 0 && this->getModel()->getBoss()->getHealthPoint() <= 0 )
+    {
+        this->view->displayWin("Victory","FFD700");
+        delay(2000);
+        this->menu->show();
+        this->getModel()->resetModel();
+        this->resetList();
+        this->view->close();
+        this->timer->stop();
+    }
+}
+
+void Controller::checkLose()
+{
+    if(this->getModel()->getPlayer()->getHealthPoint() <= 0)
+    {
+        this->view->displayWin("Defeat","FF0000");
+        qDebug() << "test";
+        delay(2000);
+        this->getModel()->resetModel();
+        this->resetList();
+        this->view->resetView();
+        this->view->close();
+        this->menu->show();
+        this->timer->stop();
+    }
+}
+
+void Controller::delay(int i)
+{
+    QTime dieTime= QTime::currentTime().addSecs(i);
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
+void Controller::resetList()
+{
+    for(int i = 0 ; i < this->getEnemyList().size() ; i++)
+    {
+        this->removeEnemy(i);
+    }
+    for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+    {
+        this->removeProjectile(i);
+    }
+    for(int i = 0 ; i < this->getCoffeeList().size() ; i++)
+    {
+        this->removeCoffee(i);
+    }
+    for(int i = 0 ; i < this->getHomeworkList().size() ; i++)
+    {
+        this->removeHomework(i);
+    }
+    for(int i = 0 ; i < this->getAmmoList().size() ; i++)
+    {
+        this->removeAmmo(i);
+    }
+}
+
 QVector<Coffee *> Controller::getCoffeeList() const
 {
     return coffeeList;
@@ -600,4 +715,9 @@ void Controller::removeHomework(int vectPos)
 {
     delete this->homeworkList[vectPos];
     this->homeworkList.erase(this->homeworkList.begin() + vectPos);
+}
+
+void Controller::showRules()
+{
+    this->rules->show();
 }

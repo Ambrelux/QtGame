@@ -12,9 +12,13 @@ public:
     unsigned int getHomeworkQuantity() const;
     void setHomeworkQuantity(unsigned int value);
 
+    float getMaxHealthPoint() const;
+    void setMaxHealthPoint(float value);
+
 private:
     unsigned int projectileQuantity;
     unsigned int homeworkQuantity;
+    float maxHealthPoint;
 };
 
 #endif // PLAYER_H

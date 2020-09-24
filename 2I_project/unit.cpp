@@ -15,16 +15,6 @@ void Unit::setHealthPoint(float value)
     healthPoint = value;
 }
 
-float Unit::getMaxHealthPoint() const
-{
-    return maxHealthPoint;
-}
-
-void Unit::setMaxHealthPoint(float value)
-{
-    maxHealthPoint = value;
-}
-
 void Unit::move()
 {
 

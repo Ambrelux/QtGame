@@ -43,6 +43,8 @@
         <file>images/student/enemy_default.png</file>
         <file>images/item/projectile.png</file>
         <file>images/item/coffee.png</file>
+        <file>images/boss/boss_default.png</file>
+        <file>images/menu_background.jpg</file>
     </qresource>
     <qresource prefix="/maps">
         <file>maps/map_matrix.txt</file>
@@ -50,5 +52,8 @@
     <qresource prefix="/sounds">
         <file>sounds/scream.wav</file>
         <file>sounds/whistle.wav</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>fonts/title.ttf</file>
     </qresource>
 </RCC>
