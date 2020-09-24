@@ -62,7 +62,7 @@ void Controller::updateGame()
         }
     }
 
-    if(this->getModel()->getPlayer()->getHealthPoint()>0)
+    if(this->getModel()->getPlayer()->getHealthPoint() > 0)
     {
         timer->start(10);
     }

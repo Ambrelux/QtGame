@@ -46,6 +46,7 @@
         <file>images/boss/boss_default.png</file>
         <file>images/menu_background.jpg</file>
         <file>images/icon.ico</file>
+        <file>images/boss/boss_down.png</file>
     </qresource>
     <qresource prefix="/maps">
         <file>maps/map_matrix.txt</file>

@@ -4,11 +4,11 @@
 Boss::Boss()
 {
     this->setHealthPoint(10);
-    this->setXTile(83);
-    this->setYTile(34);
-    this->setXCoord(83*32);
-    this->setYCoord(34*32);
-    this->setDirection(Direction::Left);
+    this->setXTile(90);
+    this->setYTile(22);
+    this->setXCoord(90*32);
+    this->setYCoord(22*32);
+    this->setDirection(Direction::Down);
     this->setTilePath(":/images/images/boss/boss_");
-    this->setTile("default");
+    this->setTile("down");
 }
