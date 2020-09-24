@@ -1,6 +1,6 @@
 #include <QApplication>
 #include "model.h"
-#include "mainWindow.h"
+#include "mainwindow.h"
 #include "controller.h"
 #include "menu.h"
 #include "rules.h"
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     Rules rules;
     Controller controller(&view,&model,&menu,&rules);
     pointerCtrl = &controller;
-    menu.show();
+    pointerCtrl->showMenu();
 
     //controller.startGame();
     return a.exec();

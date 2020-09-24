@@ -42,8 +42,15 @@ public:
     void displayAmmo(QVector<Ammo *>ammoList);
     void displayCoffee(QVector<Coffee *>coffeeList);
     void displayHomework(QVector<Homework *>homeworkList);
-    void displayWin(QString text, QString color);
+    void displayEndGame(QString text, QString color);
+    void displayUI(Player * player);
+    QFont getGameFont(int size);
     void resetView();
+
+private slots:
+    void on_menuButton_clicked();
+
+    void on_rulesButton_clicked();
 
 private:
     Ui::MainWindow *ui;

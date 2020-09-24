@@ -6,7 +6,7 @@ Rules::Rules(QWidget *parent) :
     ui(new Ui::Rules)
 {
     ui->setupUi(this);
-
+    setWindowIcon(QIcon(":/images/images/icon.ico"));
     QPixmap bkgnd(":/images/images/menu_background.jpg");
     bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;

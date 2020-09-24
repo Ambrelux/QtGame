@@ -10,11 +10,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    //this->setStyleSheet("background-color: #FFDAB9;");
+    setWindowIcon(QIcon(":/images/images/icon.ico"));
     this->scene = new QGraphicsScene();
     this->scene->setFocus();
     ui->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->view->setFixedSize(960,490);
+
+    QFont buttonFont = this->getGameFont(15);
+    ui->menuButton->setFont(buttonFont);
+    ui->rulesButton->setFont(buttonFont);
 }
 
 MainWindow::~MainWindow()
@@ -24,7 +30,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << "prout";
     switch(event->key()){
         case Qt::Key_Q:
             pointerCtrl->keyPressed("left");
@@ -141,24 +146,47 @@ void MainWindow::displayHomework(QVector<Homework *> homeworkList)
     }
 }
 
-void MainWindow::displayWin(QString text, QString color)
+void MainWindow::displayEndGame(QString text, QString color)
 {
-    this->label = new QLabel(this);
+    QFont endingFont = this->getGameFont(100);
+    ui->endLabel->setText(text);
+    ui->endLabel->setFont(endingFont);
+    ui->endLabel->setStyleSheet("QLabel {color : #" + color +"; }");
+}
+
+void MainWindow::displayUI(Player *player)
+{
+
+    QFont uiFont = this->getGameFont(20);
+    ui->coffeeLabel->setText(QString::number(player->getHealthPoint()) + "/5");
+    ui->ammoLabel->setText(QString::number(player->getProjectileQuantity()));
+    ui->homeworkLabel->setText(QString::number(player->getHomeworkQuantity()) + "/10");
+    ui->coffeeLabel->setFont(uiFont);
+    ui->homeworkLabel->setFont(uiFont);
+    ui->ammoLabel->setFont(uiFont);
+}
+
+QFont MainWindow::getGameFont(int size)
+{
     int id = QFontDatabase::addApplicationFont(":/fonts/fonts/title.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-    QFont titleFont(family);
-    titleFont.setPointSize(100);
-    this->label = new QLabel(this);
-    this->label->setText(text);
-    this->label->setFont(titleFont);
-    this->label->adjustSize();
-    this->label->setGeometry(0,0,960,540);
-    this->label->setAlignment(Qt::AlignCenter);
-    this->label->setStyleSheet("QLabel {color :" + color +"; }");
+    QFont gameFont(family);
+    gameFont.setPointSize(size);
+    return gameFont;
 }
 
 void MainWindow::resetView()
 {
     delete this->scene;
     this->scene = new QGraphicsScene();
+}
+
+void MainWindow::on_menuButton_clicked()
+{
+    pointerCtrl->showMenu();
+}
+
+void MainWindow::on_rulesButton_clicked()
+{
+    pointerCtrl->showRules();
 }

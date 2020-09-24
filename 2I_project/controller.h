@@ -28,10 +28,8 @@ class Controller : public QWidget
     Q_OBJECT
 public:
     Controller(class MainWindow *view, class Model *model, class Menu *menu, class Rules *rules);
-
+    int state = 0;
     void startGame();
-    void showRules();
-
     void keyPressed(QString key);
 
     void mapInitialization();
@@ -39,12 +37,15 @@ public:
 
     void playerAttack();
     bool checkCollisionPlayerEnemy();
+    bool checkCollisionPlayerBoss();
     bool checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction);
+    bool checkCollisionEnemyEnemy(int xTile, int yTile, Direction direction);
+    bool checkCollisionEnemyBoss(int xTile, int yTile, Direction direction);
     void checkCollisionPlayerAmmo();
     void checkCollisionPlayerCoffee();
     void checkCollisionPlayerHomework();
 
-    void createProjectile(Direction direction);
+    void createProjectile(int xTile, int yTile, Direction direction);
 
     QVector<Projectile *> getProjectileList() const;
     void setProjectileList(const QVector<Projectile *> &value);
@@ -58,6 +59,7 @@ public:
 
     QVector<Enemy *> getEnemyList() const;
     void setEnemyList(const QVector<Enemy *> &value);
+    void moveEnemies();
     void removeEnemy(int vectPos);
 
     QVector<Ammo *> getAmmoList() const;
@@ -78,14 +80,15 @@ public:
     void setModel(Model *value);
     Model *getModel() const;
 
-    void checkWin();
-    void checkLose();
+
+    void endGame();
     void delay(int i);
     void resetList();
+    void showRules();
+    void showMenu();
 
 public slots:
     void updateGame();
-    void moveEnemies();
 
 private:
     Model *model;
@@ -102,6 +105,9 @@ private:
 
     QMediaPlayer whistleSound;
     QMediaPlayer screamSound;
+    QMediaPlayer drinkSound;
+    QMediaPlayer bgMusic;
+
 
 };
 

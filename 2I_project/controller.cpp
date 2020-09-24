@@ -12,15 +12,20 @@ Controller::Controller(MainWindow *view, Model *model, Menu *menu, Rules *rules)
     timer->connect(timer,SIGNAL(timeout()), this, SLOT(updateGame()));
     this->whistleSound.setMedia(QUrl("qrc:/sounds/sounds/whistle.wav"));
     this->screamSound.setMedia(QUrl("qrc:/sounds/sounds/scream.wav"));
+    this->drinkSound.setMedia(QUrl("qrc:/sounds/sounds/drink.mp3"));
+    this->bgMusic.setMedia(QUrl("qrc:/sounds/sounds/bgMusic.mp3"));
     this->setTimeIterator(0);
 
 }
 
 void Controller::startGame(){
+    this->bgMusic.stop();
+    state = 0;
+    this->view->displayEndGame("","FFFFFF");
     this->mapInitialization();
     updateGame();
-    this->view->show();
     this->menu->close();
+    this->view->show();
 }
 
 
@@ -31,10 +36,9 @@ void Controller::updateGame()
     this->view->displayMap(this->getModel()->getPlayer(),this->getModel()->getMap());
     this->moveProjectiles();
     this->setTimeIterator(this->getTimeIterator() + 1);
-    if(this->getTimeIterator()>10)
+    if(this->getTimeIterator() % 10 == 0)
     {
         moveEnemies();
-        this->setTimeIterator(0);
     }
     this->checkCollisionProjectile();
     this->checkCollisionPlayerAmmo();
@@ -46,14 +50,23 @@ void Controller::updateGame()
     this->view->displayCoffee(this->getCoffeeList());
     this->view->displayHomework(this->getHomeworkList());
     this->view->displayPlayer(this->getModel()->getPlayer());
-    if(this->getModel()->getPlayer()->getHomeworkQuantity() >= 1)
+    this->view->displayUI(this->getModel()->getPlayer());
+    if(this->getModel()->getPlayer()->getHomeworkQuantity() >= 1 && this->getModel()->getBoss()->getHealthPoint() > 0)
     {
         this->view->displayBoss(this->getModel()->getBoss());
+        if(this->getTimeIterator() % 10 == 0)
+        {
+            this->createProjectile(this->getModel()->getBoss()->getXTile(),this->getModel()->getBoss()->getYTile(),this->getModel()->getBoss()->getDirection());
+
+        }
     }
-    this->checkWin();
-    this->checkLose();
-    this->view->displayWin("Victory","FFD700");
-    timer->start(10);
+
+    if(this->getModel()->getPlayer()->getHealthPoint()>0)
+    {
+        timer->start(10);
+    }
+
+    this->endGame();
 }
 
 void Controller::keyPressed(QString key)
@@ -63,7 +76,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Up);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
         {
             this->model->getPlayer()->move();
         }
@@ -73,7 +86,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Down);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
         {
             this->model->getPlayer()->move();
         }
@@ -82,7 +95,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Left);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
         {
             this->model->getPlayer()->move();
         }
@@ -91,7 +104,7 @@ void Controller::keyPressed(QString key)
     {
         this->model->getPlayer()->setTile(key);
         this->model->getPlayer()->setDirection(Direction::Right);
-        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy())
+        if(getFutureTile(this->model->getPlayer()->getXTile(),this->getModel()->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()) && !checkCollisionPlayerEnemy() && !checkCollisionPlayerBoss())
         {
             this->model->getPlayer()->move();
         }
@@ -101,15 +114,13 @@ void Controller::keyPressed(QString key)
         if(this->model->getPlayer()->getProjectileQuantity() > 0)
         {
             this->model->getPlayer()->setProjectileQuantity(this->model->getPlayer()->getProjectileQuantity() - 1);
-            this->createProjectile(this->model->getPlayer()->getDirection());
+            this->createProjectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection());
         }
 
     }
     else if(key == "a")
     {
-        whistleSound.play();
         playerAttack();
-        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()- 0.5);
     }
     else if(key == "r")
     {
@@ -117,12 +128,7 @@ void Controller::keyPressed(QString key)
     }
     else if(key == "m")
     {
-        this->timer->stop();
-        this->getModel()->resetModel();
-        this->resetList();
-        this->view->resetView();
-        this->view->close();
-        this->menu->show();
+        this->showMenu();
     }
 
 }
@@ -134,8 +140,8 @@ void Controller::mapInitialization()
     QTextStream stream(&file);
     QVector<QString> _mapMatrix;
     QString line;
-    QVector<Enemy *> vectEnemy = this->getEnemyList();
-    QVector<Homework *> vectHomework = this->getHomeworkList();
+    QVector<Enemy *> vectEnemy;
+    QVector<Homework *> vectHomework;
 
     while(! stream.atEnd())
     {
@@ -197,6 +203,7 @@ bool Controller::getFutureTile(int xTile, int yTile, Direction direction)
 
 void Controller::playerAttack()
 {
+    whistleSound.play();
     if(this->getEnemyList().size() > 0)
     {
         for(int i = 0 ; i < this->getEnemyList().size() ; i++)
@@ -296,26 +303,104 @@ bool Controller::checkCollisionPlayerEnemy()
     return false;
 }
 
+bool Controller::checkCollisionPlayerBoss()
+{
+    if(this->getModel()->getPlayer()->getDirection() == Direction::Up && this->getModel()->getPlayer()->getYTile() + 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
+        return true;
+    }
+    else if(this->getModel()->getPlayer()->getDirection()  == Direction::Down && this->getModel()->getPlayer()->getYTile() - 1 == this->getModel()->getBoss()->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getModel()->getBoss()->getXTile())
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
+        return true;
+    }
+    else if(this->getModel()->getPlayer()->getDirection()  == Direction::Left && this->getModel()->getPlayer()->getXTile() - 1 == this->getModel()->getBoss()->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getBoss()->getYTile())
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
+        return true;
+    }
+    else if(this->getModel()->getPlayer()->getDirection()  == Direction::Right && this->getModel()->getPlayer()->getXTile() + 1 == this->getModel()->getBoss()->getXTile() && this->getModel()->getPlayer()->getYTile() == this->getModel()->getBoss()->getYTile())
+    {
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
+        return true;
+    }
+
+    return false;
+}
+
 bool Controller::checkCollisionEnemyPlayer(int xTile, int yTile, Direction direction)
 {
     if(direction == Direction::Up && this->getModel()->getPlayer()->getYTile() + 1 == yTile && this->getModel()->getPlayer()->getXTile() == xTile)
     {
-        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
         return true;
     }
     else if(direction == Direction::Down && this->getModel()->getPlayer()->getYTile() - 1 == yTile && this->getModel()->getPlayer()->getXTile() == xTile)
     {
-        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
         return true;
     }
     else if(direction == Direction::Left && this->getModel()->getPlayer()->getXTile() + 1 == xTile && this->getModel()->getPlayer()->getYTile() == yTile)
     {
-        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
         return true;
     }
     else if(direction == Direction::Right && this->getModel()->getPlayer()->getXTile() - 1 == xTile && this->getModel()->getPlayer()->getYTile() == yTile)
     {
-        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 1);
+        this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint() - 0.5);
+        return true;
+    }
+
+    return false;
+}
+
+bool Controller::checkCollisionEnemyEnemy(int xTile, int yTile, Direction direction)
+{
+    if(this->getEnemyList().size() > 0)
+    {
+        for( int i = 0 ; i < this->getEnemyList().size() ; i++)
+        {
+            if(direction == Direction::Up && this->getEnemyList()[i]->getYTile() == yTile + 1 && this->getEnemyList()[i]->getXTile() == xTile)
+            {
+                return true;
+            }
+            else if(direction == Direction::Down && this->getEnemyList()[i]->getYTile() == yTile - 1 && this->getEnemyList()[i]->getXTile() == xTile)
+            {
+                return true;
+            }
+            else if(direction == Direction::Left && this->getEnemyList()[i]->getXTile() == xTile + 1 && this->getEnemyList()[i]->getYTile() == yTile)
+            {
+                return true;
+            }
+            else if(direction == Direction::Right && this->getEnemyList()[i]->getXTile() == xTile - 1 && this->getEnemyList()[i]->getYTile() == yTile)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    return false;
+}
+
+bool Controller::checkCollisionEnemyBoss(int xTile, int yTile, Direction direction)
+{
+    if(direction == Direction::Up && this->getModel()->getBoss()->getYTile() + 1 == yTile && this->getModel()->getBoss()->getXTile() == xTile)
+    {
+        return true;
+    }
+    else if(direction == Direction::Down && this->getModel()->getBoss()->getYTile() - 1 == yTile && this->getModel()->getBoss()->getXTile() == xTile)
+    {
+        return true;
+    }
+    else if(direction == Direction::Left && this->getModel()->getBoss()->getXTile() + 1 == xTile && this->getModel()->getBoss()->getYTile() == yTile)
+    {
+        return true;
+    }
+    else if(direction == Direction::Right && this->getModel()->getBoss()->getXTile() - 1 == xTile && this->getModel()->getBoss()->getYTile() == yTile)
+    {
         return true;
     }
 
@@ -345,6 +430,7 @@ void Controller::checkCollisionPlayerCoffee()
         {
             if(this->getModel()->getPlayer()->getYTile() == this->getCoffeeList()[i]->getYTile() && this->getModel()->getPlayer()->getXTile() == this->getCoffeeList()[i]->getXTile() && this->model->getPlayer()->getHealthPoint() < this->model->getPlayer()->getMaxHealthPoint())
             {
+                drinkSound.play();
                 removeCoffee(i);
                 this->model->getPlayer()->setHealthPoint(this->model->getPlayer()->getHealthPoint()+1);
             }
@@ -367,32 +453,11 @@ void Controller::checkCollisionPlayerHomework()
     }
 }
 
-void Controller::createProjectile(Direction direction)
+void Controller::createProjectile(int xTile, int yTile, Direction direction)
 {
-    if(direction == Direction::Up)
-    {
-        QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
-        this->setProjectileList(vect);
-    }
-    else if (direction == Direction::Down)
-    {
-        QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
-        this->setProjectileList(vect);
-    }
-    else if (direction == Direction::Left)
-    {
-        QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
-        this->setProjectileList(vect);
-    }
-    else if (direction == Direction::Right)
-    {
-        QVector<Projectile *> vect = this->getProjectileList();
-        vect.push_back(new Projectile(this->model->getPlayer()->getXTile(),this->model->getPlayer()->getYTile(),this->model->getPlayer()->getDirection()));
-        this->setProjectileList(vect);
-    }
+    QVector<Projectile *> vect = this->getProjectileList();
+    vect.push_back(new Projectile(xTile,yTile,direction));
+    this->setProjectileList(vect);
 }
 
 void Controller::moveProjectiles()
@@ -436,6 +501,7 @@ void Controller::moveProjectiles()
 
 void Controller::checkCollisionProjectile()
 {
+    // check collisions projectiles enemies
     if(this->getProjectileList().size() > 0)
     {
         for(int i = 0 ; i < this->getProjectileList().size() ; i++)
@@ -454,20 +520,30 @@ void Controller::checkCollisionProjectile()
                     }
                 }
             }
+        }
 
+        // check collisions projectiles boss
+        for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+        {
             if(this->getProjectileList()[i]->getXTile() == this->getModel()->getBoss()->getXTile() && this->getProjectileList()[i]->getYTile() == this->getModel()->getBoss()->getYTile())
             {
                 this->getModel()->getBoss()->setHealthPoint(this->getModel()->getBoss()->getHealthPoint() - 5);
                 this->removeProjectile(i);
                 break;
             }
-            else if(this->getProjectileList()[i]->getXTile() == this->getModel()->getPlayer()->getXTile() && this->getProjectileList()[i]->getYTile() == this->getModel()->getPlayer()->getYTile())
+        }
+
+        // check collision projectiles player
+        for(int i = 0 ; i < this->getProjectileList().size() ; i++)
+        {
+            if(this->getProjectileList()[i]->getXTile() == this->getModel()->getPlayer()->getXTile() && this->getProjectileList()[i]->getYTile() == this->getModel()->getPlayer()->getYTile())
             {
-                this->getModel()->getPlayer()->setHealthPoint(0);
+                this->getModel()->getPlayer()->setHealthPoint(this->getModel()->getPlayer()->getHealthPoint()-1);
                 this->removeProjectile(i);
                 break;
             }
         }
+
     }
 }
 
@@ -554,7 +630,7 @@ void Controller::moveEnemies()
                 this->enemyList[i]->setNbMove(0);
             }
 
-            if(getFutureTile(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyPlayer(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()))
+            if(getFutureTile(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyPlayer(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()) && !checkCollisionEnemyEnemy(this->enemyList[i]->getXTile(),this->enemyList[i]->getYTile(),this->enemyList[i]->getDirection()))
             {
                 this->enemyList[i]->move();
             }
@@ -608,41 +684,34 @@ Model *Controller::getModel() const
     return model;
 }
 
-void Controller::checkWin()
-{
-    if(this->getModel()->getPlayer()->getHealthPoint() > 0 && this->getModel()->getBoss()->getHealthPoint() <= 0 )
-    {
-        this->view->displayWin("Victory","FFD700");
-        delay(2000);
-        this->menu->show();
-        this->getModel()->resetModel();
-        this->resetList();
-        this->view->close();
-        this->timer->stop();
-    }
-}
 
-void Controller::checkLose()
+void Controller::endGame()
 {
-    if(this->getModel()->getPlayer()->getHealthPoint() <= 0)
-    {
-        this->view->displayWin("Defeat","FF0000");
-        qDebug() << "test";
-        delay(2000);
-        this->getModel()->resetModel();
-        this->resetList();
-        this->view->resetView();
-        this->view->close();
-        this->menu->show();
-        this->timer->stop();
+    if(state == 1){
+        this->showMenu();
     }
+
+    if(this->getModel()->getPlayer()->getHealthPoint()<0.5)
+    {
+        this->view->displayEndGame("Defeat","FF0000");
+        state=1;
+    }
+    else if(this->getModel()->getBoss()->getHealthPoint() < 0.5)
+    {
+        this->view->displayEndGame("Victory","FFD700");
+        state = 1;
+    }
+
+
 }
 
 void Controller::delay(int i)
 {
     QTime dieTime= QTime::currentTime().addSecs(i);
     while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    {
+
+    }
 }
 
 void Controller::resetList()
@@ -720,4 +789,17 @@ void Controller::removeHomework(int vectPos)
 void Controller::showRules()
 {
     this->rules->show();
+}
+
+void Controller::showMenu()
+{
+    if(state==1){
+        delay(2);
+    }
+    this->timer->stop();
+    this->getModel()->resetModel();
+    this->resetList();
+    this->view->close();
+    this->menu->show();
+    this->bgMusic.play();
 }

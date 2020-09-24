@@ -22,6 +22,8 @@ private slots:
 
     void on_rulesButton_clicked();
 
+    void on_quitButton_clicked();
+
 private:
     Ui::Menu *ui;
     QLabel *titreLabel;

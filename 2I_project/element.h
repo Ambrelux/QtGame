@@ -34,7 +34,6 @@ public:
 
     QString getTilePath() const;
     void setTilePath(const QString &value);
-
     Direction getDirection() const;
     void setDirection(const Direction &value);
 

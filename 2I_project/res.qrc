@@ -45,6 +45,7 @@
         <file>images/item/coffee.png</file>
         <file>images/boss/boss_default.png</file>
         <file>images/menu_background.jpg</file>
+        <file>images/icon.ico</file>
     </qresource>
     <qresource prefix="/maps">
         <file>maps/map_matrix.txt</file>
@@ -52,6 +53,8 @@
     <qresource prefix="/sounds">
         <file>sounds/scream.wav</file>
         <file>sounds/whistle.wav</file>
+        <file>sounds/drink.mp3</file>
+        <file>sounds/bgMusic.mp3</file>
     </qresource>
     <qresource prefix="/fonts">
         <file>fonts/title.ttf</file>
